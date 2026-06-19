@@ -20,15 +20,13 @@
 <script src="jquery.min.js.download"> </script>
 <script> var view = "document";var $j = jQuery.noConflict();   </script>
 
-<img src="MPElogo.png" alt="Multiplastics Logo" style="float:centre;width="650" height="115">
-
 <body>
-<p style= "padding-left: 5px; font-size: 14px; font-family: Arial; line-height: .0; ">
-<b> The below will calculate the reels per layer and pallet weight:</b>
-<p style= "padding-left: 5px; font-size: 14px; font-family: Arial; line-height: .5; ">
-</b> Fill in the details below to calculate:</b> 
+<p style="padding-left: 5px; font-size: 18px; font-family: Arial; line-height: .0; ">
+<b> The below will calculate the reels diameter, reel weight, pallet weight and reels per layer.</b>
+</p><p style="padding-left: 5px; font-size: 12px; font-family: Arial; line-height: .5; ">
+Fill in the boxes hightighted in yellow to calculate. You can also edit the Pallet Width, Pallet Length, Pallet Height, Film Density, Core Size and Core Wall if different. 
 
-<p style="padding-left: 10px; font-size:14px; font-family: Arial">
+</p><p style="padding-left: 10px; font-size:14px; font-family: Arial">
 
 <style>
 table {
@@ -36,61 +34,61 @@ table {
 }
 </style>
 
-<table style="width:625; font-size:14px; font-family: Arial; line-height: 1; border: 2px solid red;">
+</p><table style="width:625; font-size:14px; font-family: Arial; line-height: 1; border: 2px solid red;">
 
-<tr>
-<td><b> Film Thickness</b>&nbsp&nbsp
-<td><input id="mu" name="mu" type="text" size="3" style="background-color: yellow;"> mu</td>
+<tbody><tr>
+<td><b> Film Thickness</b>&nbsp;&nbsp;
+</td><td><input id="mu" name="mu" type="text" size="3" style="background-color: yellow;"> mu</td>
 <td></td><td></td>
 
 <td><b> Reel Length</b>
-<td><input id="meters" name="meters" type="text" size="3" style="background-color: yellow;"> meters&nbsp&nbsp&nbsp&nbsp</td>
+</td><td><input id="meters" name="meters" type="text" size="3" style="background-color: yellow;"> meters&nbsp;&nbsp;&nbsp;&nbsp;</td>
 
 <td><b> Reel Width</b>
-<td><input id="rlwidth" name="rlwidth" type="text" size="3" style="background-color: yellow;">
-mm&nbsp&nbsp&nbsp&nbsp</td>
+</td><td><input id="rlwidth" name="rlwidth" type="text" size="3" style="background-color: yellow;">
+mm&nbsp;&nbsp;&nbsp;&nbsp;</td>
 
 <td><b> Reel Qty</b>
-<td><input id="reelqty" name="reelqty" type="text" size="3" style="background-color: yellow;">
-&nbsp&nbsp&nbsp&nbsp</td>
+</td><td><input id="reelqty" name="reelqty" type="text" size="3" style="background-color: yellow;">
+&nbsp;&nbsp;&nbsp;&nbsp;</td>
 </tr>
 
 <tr>
 <td><b> Pallet Width</b>
-<td><input id="rw" name="rw" value="1200" type="text" size="3"> mm</td>
+</td><td><input id="rw" name="rw" value="1200" type="text" size="3"> mm</td>
 <td></td><td><font color="white">. . .</font></td>
 
-<td><b> Pallet Length&nbsp</b>
-<td><input id="rh" name="rh" value="1000" type="text" size="3"> mm
+<td><b> Pallet Length&nbsp;</b>
+</td><td><input id="rh" name="rh" value="1000" type="text" size="3"> mm
 
-<td><b> Pallet Height&nbsp&nbsp&nbsp</b>
-<td><input id="height" name="height" value="1500" type="text" size="3"> mm
+</td><td><b> Pallet Height&nbsp;&nbsp;&nbsp;</b>
+</td><td><input id="height" name="height" value="1500" type="text" size="3"> mm
 
-<td><b> Film Density&nbsp&nbsp</b>
-<td><input id="density" name="density" value="0.91" type="text" size="3"> PP=0.91 &nbsp PET=1.4&nbsp&nbsp</td>
+</td><td><b> Film Density&nbsp;&nbsp;</b>
+</td><td><input id="density" name="density" value="0.91" type="text" size="3"> PP=0.91 &nbsp; PET=1.4&nbsp;&nbsp;</td>
 </tr>
 
 <tr>
 <td><b> Core Size</b>
-<td><input id="core_euxx" name="core_euxx" value=76 type="text" size="3"> mm</td>
+</td><td><input id="core_euxx" name="core_euxx" value="76" type="text" size="3"> mm</td>
 <td></td><td></td>
 
-<td><b> Core Wall &nbsp&nbsp&nbsp&nbsp</b>
-<td><input id="thickness_euxx" name="thickness_euxx" value=9.6 type="text" size="3"> mm</td>
+<td><b> Core Wall &nbsp;&nbsp;&nbsp;&nbsp;</b>
+</td><td><input id="thickness_euxx" name="thickness_euxx" value="9.6" type="text" size="3"> mm</td>
 
 <td><b> Reel Weight</b>
-<td><input type="text" id="rlweight" readonly="readonly" size="3"> kg
-&nbsp&nbsp&nbsp&nbsp</td>
+</td><td><input type="text" id="rlweight" readonly="readonly" size="3"> kg
+&nbsp;&nbsp;&nbsp;&nbsp;</td>
 
 <td><b></b>
-<td>
-&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+</td><td>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </td>
 </tr>
   
 <tr>
-<td><b> Spacing&nbsp</b>
-<td><input id="cs" name="cs" value="1" type="text" size="3"> mm
+<td><b> Spacing&nbsp;</b>
+</td><td><input id="cs" name="cs" value="1" type="text" size="3"> mm
 </td>
 <td></td><td></td>
 
@@ -98,17 +96,15 @@ mm&nbsp&nbsp&nbsp&nbsp</td>
 <td><input type="text" id="cd" readonly="readonly" size="3"> mm</td>
 
 <td><b> Pallet Weight</b>
-<td><input type="text" id="palletweight" readonly="readonly" size="3"> kg
-&nbsp&nbsp
+</td><td><input type="text" id="palletweight" readonly="readonly" size="3"> kg
+&nbsp;&nbsp;
 </td>
 
 <td><b> Max No. Layers</b></td>
-<td><input type="text" id="maxpalht" readonly="readonly" size="3"> &nbsp&nbsp </td>
-</table>
+<td><input type="text" id="maxpalht" readonly="readonly" size="3"> &nbsp;&nbsp; </td>
+</tr></tbody></table>
 
-<script language="JavaScript">
-
-	function calculate_eu ()
+<script language="JavaScript">	function calculate_eu ()
 	{
 		
 		var meterage_caliper = parseFloat(document.getElementById('meters').value) * parseFloat(document.getElementById('mu').value);
@@ -116,13 +112,15 @@ mm&nbsp&nbsp&nbsp&nbsp</td>
 		var twice_thick = parseFloat(document.getElementById('thickness_euxx').value) * 2;
 		var core_thick = Math.pow((twice_thick + core), 2);
 		document.getElementById('cd').value = Math.round(Math.sqrt(4 * meterage_caliper / Math.PI + core_thick))+1;
+		document.getElementById('cd1').value = Math.round(Math.sqrt(4 * meterage_caliper / Math.PI + core_thick))+1
 	}
 	{
 		document.getElementById('meters').value = 
 		document.getElementById('mu').value = 
 		document.getElementById('core_eu').value = 
 		document.getElementById('thickness_eu').value = 
-		document.getElementById('cd').value = '';
+		document.getElementById('cd').value = ''
+		document.getElementById('cd1').value = '';
 	}
 
 	function calculate_reelweight()
@@ -133,6 +131,7 @@ mm&nbsp&nbsp&nbsp&nbsp</td>
 		document.getElementById('palletweight').value = (((gsmm2 * m2 / 1000).toFixed(1)) * parseFloat(document.getElementById('reelqty').value));
 		var maxpalht = parseFloat(document.getElementById('height').value) / parseFloat(document.getElementById('rlwidth').value);
 		document.getElementById('maxpalht').value = Math.floor(maxpalht);
+    		document.getElementById('rlwidth1').value = document.getElementById('rlwidth').value;
 	}
 	{
 		document.getElementById('density').value = 0.91
@@ -144,51 +143,52 @@ mm&nbsp&nbsp&nbsp&nbsp</td>
 		document.getElementById('palletweight').value = ''
 		document.getElementById('rlweight').value = ''
 		document.getElementById('maxpalht').value = '';
-	}
-	</script>
+	}</script>
 
 <div>
-<table cellpadding="2">
-<tbody><tr>
-<p style= "padding-left: 0px; font-size: 5px; font-family: Arial; line-height: .0; ">
+<p style="padding-left: 0px; font-size: 5px; font-family: Arial; line-height: .0; ">
 
-<input value="Calculate" onclick="calculate_eu(); calculateRectangle(); calculateRectangle2(); calculate_reelweight();" type="button">&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
-<input value="Print Page" onClick="window.print()" value="Print Page" type="button">
+<input value="Calculate" onclick="calculate_eu(); calculateRectangle(); calculateRectangle2(); calculate_reelweight(); updateReelLabels();" type="button">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<input value="Print Page" onclick="window.print()" type="button">
 <br>
-<p style= "padding-left: 0px; font-size: 25px; font-family: Arial; line-height: .0; ">
-<p style= "padding-left: 5px; font-size: 14px; font-family: Arial; line-height: .0; ">
-<br>Once calculated, enter the number of reels per layer here:</br>
+</p><p style="padding-left: 0px; font-size: 25px; font-family: Arial; line-height: .0; ">
+</p><p style="padding-left: 5px; font-size: 14px; font-family: Arial; line-height: .0; ">
+<br>Once calculated, enter the number of reels per layer here:<br>
 
 
 
-<table style="width:800; font-size:14px; font-family: Arial; border: 2px solid black;">
+</p><table cellpadding="2">
+<tbody><tr>
+</tr></tbody></table><div>
+</div><table style="width:800; font-size:14px; font-family: Arial; border: 2px solid black;">
 
-<tr>
-<td> <b> Reel Layer Qty &nbsp </td> <td><input id="mlayer" name="mlayer" value="" type="text" size="3" style="background-color: yellow;"> </b>
-<td> <input value="Calculate" onclick="calculate_totlay(); calculate_palhgt(); calculate_reelweight(); calculate_palsty(); calculate_palsty1(); calculate_palstya(); calculate_palsty1a(); calculate_pha(); calculate_KIRKNO2T();" type="button"> </td>
+<tbody><tr>
+<td> <b> Reel Layer Qty &nbsp; </b></td> <td><input id="mlayer" name="mlayer" value="" type="text" size="3" style="background-color: yellow;"> 
+</td><td> <input value="Calculate" onclick="calculate_totlay(); calculate_palhgt(); calculate_reelweight(); calculate_palsty(); calculate_palsty1(); calculate_palstya(); calculate_palsty1a(); calculate_pha(); calculate_KIRKNO2T();" type="button"> </td>
 <td> </td>
 </tr>
 
 <tr>
-<td> Total Layers Required &nbsp&nbsp </td>
+<td> Total Layers Required &nbsp;&nbsp; </td>
 <td> <input type="text" id="totnlay" readonly="readonly" size="3"> </td>
-<td> Total Pallet Height &nbsp&nbsp </td>
-<td> <input type="text" id="palhgt" readonly="readonly" size="3"> mm &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp </td>
+<td> Total Pallet Height &nbsp;&nbsp; </td>
+<td> <input type="text" id="palhgt" readonly="readonly" size="3"> mm &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td>
 
-<tr>
-<td> <b> Transport Load Type </td>
-<td> <input type="text" id="KIRKTX" readonly="readonly" size="20"> </b> </td>
+</tr><tr>
+<td> <b> Transport Load Type </b></td>
+<td> <input type="text" id="KIRKTX" readonly="readonly" size="20">  </td>
 <td> </td>
 <td> </td>
 </tr>
 
 
 
-<input type="hidden" id="palletweight1" readonly="readonly" size="20">
-<input type="hidden" id="palletweight2" readonly="readonly" size="3">
-<input type="hidden" id="palletheight1" readonly="readonly" size="20">
-<input type="hidden" id="palletheight2" readonly="readonly" size="3">
-<input type="hidden" id="KIRKNO" readonly="readonly" size="20">
+<input type="hidden" id="palletweight1" readonly="readonly" size="20" value="Half Pallet">
+<input type="hidden" id="palletweight2" readonly="readonly" size="3" value="2">
+<input type="hidden" id="palletheight1" readonly="readonly" size="20" value="Quarter Pallet">
+<input type="hidden" id="palletheight2" readonly="readonly" size="3" value="1">
+<input type="hidden" id="KIRKNO" readonly="readonly" size="20" value="2">
 
 
 <script language="JavaScript">
@@ -329,38 +329,20 @@ function calculate_palstya(palletweight)
 
 </script>
 
-<div>
-<table cellpadding="2">
-<br>
-</form>
-
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<style>
-* {
-  box-sizing: border-box;
-}
-
-.column {	float: left;	  width: 45;	  padding: 10px;	  height: 385px;	}
-
-.row:after {	  content: "";	  display: table;	  clear: both;	}
-</style>
-</head>
-<body>
-
-<div class="row">
+</tbody></table><br><meta name="viewport" content="width=device-width, initial-scale=1"><div class="row">
 <div class="column" style="background-color:#CBCBCB;">
-<p style= "padding-left: 0px; font-size: 14px; font-family: Arial; line-height: .0; ">
+<p style="padding-left: 0px; font-size: 14px; font-family: Arial; line-height: .0; ">
 <b>Rectangular Pattern</b>
 	
-<p id="results">Number of reels per layer: <b>X</b></p> <div class="center"><canvas id="myCanvas" width="350" height="350">&nbsp;</canvas></div> <p id="circles_image1" style="display: none;"><img src="./NEW_files/circles_within_rectangle_rectangular_pattern.png" style="display: block; margin-left: auto; margin-right: auto;" width="100" height="100"></p> 
+</p><p id="results">Maximum number of reels per layer: <b>16</b></p> <div class="center"><canvas id="myCanvas" width="350" height="350">&nbsp;</canvas></div> <p id="circles_image1" style="display: none;"><img src="file:///C:/Users/andyg/OneDrive/Desktop/ReelCalculator/circles_within_rectangle_rectangular_pattern.png" style="display: block; margin-left: auto; margin-right: auto;" width="100" height="100"></p> 
 
 </div>
 <div class="column" style="background-color:#BEBEBE;">
-<p style= "padding-left: 0px; font-size: 14px; font-family: Arial; line-height: .0; ">
+<p style="padding-left: 0px; font-size: 14px; font-family: Arial; line-height: .0; ">
 
 <b>Triangular Pattern</b>
 
-<p id="results2">Number of reels per layer: <b>X</b></p> <div class="center"><canvas id="myCanvas2" width="350" height="350">&nbsp;</canvas></div> <p id="circles_image2" style="display: none;"><img src="./NEW_files/circles_within_rectangle_triangular_pattern.png" style="display: block; margin-left: auto; margin-right: auto;" width="100" height="100"></p> </script>
+</p><p id="results2">Maximum number of reels per layer: <b>16</b></p> <div class="center"><canvas id="myCanvas2" width="350" height="350">&nbsp;</canvas></div> <p id="circles_image2" style="display: none;"><img src="file:///C:/Users/andyg/OneDrive/Desktop/ReelCalculator/circles_within_rectangle_triangular_pattern.png" style="display: block; margin-left: auto; margin-right: auto;" width="100" height="100"></p> 
 
 <script>
 function Circle(x, y, r){
@@ -498,4 +480,101 @@ calculateRectangle2();
 
 </script>
 </div>
-</font>
+<div class="column" style="background-color:#CBCBCB;">
+<p style="padding-left: 0px; font-size: 14px; font-family: Arial; line-height: .0; ">
+
+<b>Reel Dimensions</b>
+
+</p><p id="results2">Reel Diameter / OD (mm)</p> <div class="center"></div> <div style="position:relative; width:300px; height:300px; margin:auto;">
+
+    <!-- Reel Image -->
+    <img src="./reel.png" id="reelImage" style="width:270px; height:auto; position:absolute; left:25px; top:25px;">
+
+    <!-- Vertical Arrow (Width) -->
+    <div style="position:absolute; left:5px; top:40px; height:260px;">
+        <div style="position:absolute; top:0;">▲</div>
+        <div style="border-left:2px solid black; height:200px; margin-left:7px; position:relative; top:10px;"></div>
+        <div style="position:absolute; bottom:40;">▼</div>
+    </div>
+
+    <!-- Width Label -->
+    <div style="position:absolute;
+            background: transparent;
+            border: none;
+            text-align: center;
+            left:30px;
+            top:230px;
+            padding:1px 1px;
+            font-family: Arial;
+            font-weight:bold;
+            transform: rotate(-90deg);
+            transform-origin: left top;">
+            Reel Width:
+<input type="text" id="rlwidth1" size="1" readonly="" tabindex="-1" style="
+           text-align:center;
+           font-size: 16px;
+           border:none;
+           background:transparent;
+           outline:none;
+           pointer-events:none;
+           font-family:Arial;
+           font-weight:bold;
+       ">
+    mm
+</div>
+
+    <!-- Horizontal Arrow (Diameter) -->
+    <div style="position:absolute; left:70px; top:280px; width:180px;">
+        <span style="float:left; position:absolute;= top:0;=">◄</span>
+        <div style="border-top:2px solid black; margin:8px 10px;"></div>
+        <span style="position:absolute; right:0; top:0;">►</span>
+    </div>
+
+    <!-- Diameter Label -->
+    <div id="reelod" style="position:absolute;
+        background: transparent;
+        border: none;
+        text-align: center;
+        left:80px;
+        top:260px;
+        font-family: Arial;
+        padding:2px 5px;
+        font-weight:bold;">
+        Reel OD:
+<input style="
+           text-align:center;
+           font-size: 16px;
+           border:none;
+           background:transparent;
+           outline:none;
+           pointer-events:none;
+           font-family:Arial;
+           font-weight:bold;
+       " tabindex="-1" readonly="" size="1" id="cd1" type="text">
+mm
+        
+        </div>
+
+</div>
+
+ 
+
+
+</div></div><table cellpadding="2">
+
+
+
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+.column {	float: left;	  width: 45;	  padding: 10px;	  height: 385px;	}
+
+.row:after {	  content: "";	  display: table;	  clear: both;	}
+</style>
+
+
+
+</table></div></body></html>
