@@ -1,0 +1,580 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,maximum-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+
+<style type="text/css" media="screen"></style>
+<style type="text/css" media="print">
+ 
+@media print {
+    @page {size: A4 landscape;max-height:100%; max-width:100%}
+
+</style>
+</head>
+
+<script type="text/javascript" src=".saved_resource"></script>
+<script type="text/javascript" src=".saved_resource(1)"></script>
+<script src="jquery.min.js.download"> </script>
+<script> var view = "document";var $j = jQuery.noConflict();   </script>
+
+<body>
+<p style="padding-left: 5px; font-size: 18px; font-family: Arial; line-height: .0; ">
+<b> The below will calculate the reels diameter, reel weight, pallet weight and reels per layer.</b>
+</p><p style="padding-left: 5px; font-size: 12px; font-family: Arial; line-height: .5; ">
+Fill in the boxes hightighted in yellow to calculate. You can also edit the Pallet Width, Pallet Length, Pallet Height, Film Density, Core Size and Core Wall if different. 
+
+</p><p style="padding-left: 10px; font-size:14px; font-family: Arial">
+
+<style>
+table {
+	border-collapse: collapse;
+}
+</style>
+
+</p><table style="width:625; font-size:14px; font-family: Arial; line-height: 1; border: 2px solid red;">
+
+<tbody><tr>
+<td><b> Film Thickness</b>&nbsp;&nbsp;
+</td><td><input id="mu" name="mu" type="text" size="3" style="background-color: yellow;"> mu</td>
+<td></td><td></td>
+
+<td><b> Reel Length</b>
+</td><td><input id="meters" name="meters" type="text" size="3" style="background-color: yellow;"> meters&nbsp;&nbsp;&nbsp;&nbsp;</td>
+
+<td><b> Reel Width</b>
+</td><td><input id="rlwidth" name="rlwidth" type="text" size="3" style="background-color: yellow;">
+mm&nbsp;&nbsp;&nbsp;&nbsp;</td>
+
+<td><b> Reel Qty</b>
+</td><td><input id="reelqty" name="reelqty" type="text" size="3" style="background-color: yellow;">
+&nbsp;&nbsp;&nbsp;&nbsp;</td>
+</tr>
+
+<tr>
+<td><b> Pallet Width</b>
+</td><td><input id="rw" name="rw" value="1200" type="text" size="3"> mm</td>
+<td></td><td><font color="white">. . .</font></td>
+
+<td><b> Pallet Length&nbsp;</b>
+</td><td><input id="rh" name="rh" value="1000" type="text" size="3"> mm
+
+</td><td><b> Pallet Height&nbsp;&nbsp;&nbsp;</b>
+</td><td><input id="height" name="height" value="1500" type="text" size="3"> mm
+
+</td><td><b> Film Density&nbsp;&nbsp;</b>
+</td><td><input id="density" name="density" value="0.91" type="text" size="3"> PP=0.91 &nbsp; PET=1.4&nbsp;&nbsp;</td>
+</tr>
+
+<tr>
+<td><b> Core Size</b>
+</td><td><input id="core_euxx" name="core_euxx" value="76" type="text" size="3"> mm</td>
+<td></td><td></td>
+
+<td><b> Core Wall &nbsp;&nbsp;&nbsp;&nbsp;</b>
+</td><td><input id="thickness_euxx" name="thickness_euxx" value="9.6" type="text" size="3"> mm</td>
+
+<td><b> Reel Weight</b>
+</td><td><input type="text" id="rlweight" readonly="readonly" size="3"> kg
+&nbsp;&nbsp;&nbsp;&nbsp;</td>
+
+<td><b></b>
+</td><td>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</td>
+</tr>
+  
+<tr>
+<td><b> Spacing&nbsp;</b>
+</td><td><input id="cs" name="cs" value="1" type="text" size="3"> mm
+</td>
+<td></td><td></td>
+
+<td><b> Reel OD</b></td>
+<td><input type="text" id="cd" readonly="readonly" size="3"> mm</td>
+
+<td><b> Pallet Weight</b>
+</td><td><input type="text" id="palletweight" readonly="readonly" size="3"> kg
+&nbsp;&nbsp;
+</td>
+
+<td><b> Max No. Layers</b></td>
+<td><input type="text" id="maxpalht" readonly="readonly" size="3"> &nbsp;&nbsp; </td>
+</tr></tbody></table>
+
+<script language="JavaScript">	function calculate_eu ()
+	{
+		
+		var meterage_caliper = parseFloat(document.getElementById('meters').value) * parseFloat(document.getElementById('mu').value);
+		var core = parseFloat(document.getElementById('core_euxx').value);
+		var twice_thick = parseFloat(document.getElementById('thickness_euxx').value) * 2;
+		var core_thick = Math.pow((twice_thick + core), 2);
+		document.getElementById('cd').value = Math.round(Math.sqrt(4 * meterage_caliper / Math.PI + core_thick))+1;
+		document.getElementById('cd1').value = Math.round(Math.sqrt(4 * meterage_caliper / Math.PI + core_thick))+1
+	}
+	{
+		document.getElementById('meters').value = 
+		document.getElementById('mu').value = 
+		document.getElementById('core_eu').value = 
+		document.getElementById('thickness_eu').value = 
+		document.getElementById('cd').value = ''
+		document.getElementById('cd1').value = '';
+	}
+
+	function calculate_reelweight()
+	{
+		var m2 = parseFloat(document.getElementById('meters').value) * parseFloat(document.getElementById('rlwidth').value / 1000);
+		var gsmm2 = parseFloat(document.getElementById('mu').value) * parseFloat(document.getElementById('density').value);
+		document.getElementById('rlweight').value = (gsmm2 * m2 / 1000).toFixed(1);
+		document.getElementById('palletweight').value = (((gsmm2 * m2 / 1000).toFixed(1)) * parseFloat(document.getElementById('reelqty').value));
+		var maxpalht = parseFloat(document.getElementById('height').value) / parseFloat(document.getElementById('rlwidth').value);
+		document.getElementById('maxpalht').value = Math.floor(maxpalht);
+    		document.getElementById('rlwidth1').value = document.getElementById('rlwidth').value;
+	}
+	{
+		document.getElementById('density').value = 0.91
+		document.getElementById('mu').value = 
+		document.getElementById('meters').value = 
+		document.getElementById('reelqty').value = 
+		document.getElementById('rlwidth').value = 
+		document.getElementById('height').value = 
+		document.getElementById('palletweight').value = ''
+		document.getElementById('rlweight').value = ''
+		document.getElementById('maxpalht').value = '';
+	}</script>
+
+<div>
+<p style="padding-left: 0px; font-size: 5px; font-family: Arial; line-height: .0; ">
+
+<input value="Calculate" onclick="calculate_eu(); calculateRectangle(); calculateRectangle2(); calculate_reelweight(); updateReelLabels();" type="button">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<input value="Print Page" onclick="window.print()" type="button">
+<br>
+</p><p style="padding-left: 0px; font-size: 25px; font-family: Arial; line-height: .0; ">
+</p><p style="padding-left: 5px; font-size: 14px; font-family: Arial; line-height: .0; ">
+<br>Once calculated, enter the number of reels per layer here:<br>
+
+
+
+</p><table cellpadding="2">
+<tbody><tr>
+</tr></tbody></table><div>
+</div><table style="width:800; font-size:14px; font-family: Arial; border: 2px solid black;">
+
+<tbody><tr>
+<td> <b> Reel Layer Qty &nbsp; </b></td> <td><input id="mlayer" name="mlayer" value="" type="text" size="3" style="background-color: yellow;"> 
+</td><td> <input value="Calculate" onclick="calculate_totlay(); calculate_palhgt(); calculate_reelweight(); calculate_palsty(); calculate_palsty1(); calculate_palstya(); calculate_palsty1a(); calculate_pha(); calculate_KIRKNO2T();" type="button"> </td>
+<td> </td>
+</tr>
+
+<tr>
+<td> Total Layers Required &nbsp;&nbsp; </td>
+<td> <input type="text" id="totnlay" readonly="readonly" size="3"> </td>
+<td> Total Pallet Height &nbsp;&nbsp; </td>
+<td> <input type="text" id="palhgt" readonly="readonly" size="3"> mm &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td>
+
+</tr><tr>
+<td> <b> Transport Load Type </b></td>
+<td> <input type="text" id="KIRKTX" readonly="readonly" size="20">  </td>
+<td> </td>
+<td> </td>
+</tr>
+
+
+
+<input type="hidden" id="palletweight1" readonly="readonly" size="20" value="Half Pallet">
+<input type="hidden" id="palletweight2" readonly="readonly" size="3" value="2">
+<input type="hidden" id="palletheight1" readonly="readonly" size="20" value="Quarter Pallet">
+<input type="hidden" id="palletheight2" readonly="readonly" size="3" value="1">
+<input type="hidden" id="KIRKNO" readonly="readonly" size="20" value="2">
+
+
+<script language="JavaScript">
+
+	function calculate_totlay ()
+	{
+		var totnlay = parseFloat(document.getElementById('reelqty').value) / parseFloat(document.getElementById('mlayer').value);
+		document.getElementById('totnlay').value = Math.ceil(totnlay);
+	}
+	{
+		document.getElementById('mlayer').value = 
+		document.getElementById('reelqty').value = 
+		document.getElementById('totnlay').value = '';
+	}
+	
+	function calculate_palhgt ()
+	{
+		var palhgt = (parseFloat(document.getElementById('totnlay').value) * parseFloat(document.getElementById('rlwidth').value) + 200);
+		document.getElementById('palhgt').value = (palhgt);
+	}
+	{
+		document.getElementById('rlwidth').value = 
+		document.getElementById('totnlay').value = 
+		document.getElementById('palhgt').value = '';
+	}
+	
+	function calculate_palsty(palletweight)
+	{
+        	var PALTYPE;
+		var myOldVal = document.getElementById('palletweight').value;
+
+        	if (myOldVal >= 500 && myOldVal < 1001) {		// will catch everything from 500 - 999
+	      PALTYPE = "Full Pallet";
+        } 	else if (myOldVal >= 250 && myOldVal < 500) {		// will catch everything from 250 - 499
+	      PALTYPE = "Half Pallet";
+        } 	else if (myOldVal < 250) {				// will catch everything from 0 - 249
+	      PALTYPE = "Quarter Pallet";
+        } 	else {							// will catch everything from 1000+
+	      PALTYPE = "OVER 1 PALLET";
+        }
+	    document.getElementById('palletweight1').value = PALTYPE;
+	}
+
+	function calculate_palsty1(palhgt)
+	{
+        	var PALTYPE1;
+		var myOldVal1 = document.getElementById('palhgt').value;
+
+        	if (myOldVal1 >= 1500 && myOldVal1 < 2001) {		// will catch everything from 1500 - 2000
+	      PALTYPE1 = "Full Pallet";
+        } 	else if (myOldVal1 >= 1000 && myOldVal1 < 1500) {	// will catch everything from 1000 - 1500
+	      PALTYPE1 = "Half Pallet";
+        } 	else if (myOldVal1 < 1000) {				// will catch everything from 0 - 1000
+	      PALTYPE1 = "Quarter Pallet";
+        } 	else {							// will catch everything from 2000+
+	      PALTYPE1 = "OVER 1 PALLET";
+        }
+	    document.getElementById('palletheight1').value = PALTYPE1;
+	}
+
+
+
+function calculate_palstya(palletweight)
+	{
+        	var PALTYPEa;
+		var myOldVal = document.getElementById('palletweight').value;
+
+        	if (myOldVal >= 500 && myOldVal < 1001) {		// will catch everything from 500 - 999
+	      PALTYPEa = "3";
+        } 	else if (myOldVal >= 250 && myOldVal < 500) {		// will catch everything from 250 - 499
+	      PALTYPEa = "2";
+        } 	else if (myOldVal < 250) {				// will catch everything from 0 - 249
+	      PALTYPEa = "1";
+        } 	else {							// will catch everything from 1000+
+	      PALTYPEa = "4";
+        }
+	    document.getElementById('palletweight2').value = PALTYPEa;
+	}
+
+	function calculate_palsty1a(palhgt)
+	{
+        	var PALTYPE1a;
+		var myOldVal1 = document.getElementById('palhgt').value;
+
+        	if (myOldVal1 >= 1500 && myOldVal1 < 2001) {		// will catch everything from 1500 - 2000
+	      PALTYPE1a = "3";
+        } 	else if (myOldVal1 >= 1000 && myOldVal1 < 1500) {	// will catch everything from 1000 - 1500
+	      PALTYPE1a = "2";
+        } 	else if (myOldVal1 < 1000) {				// will catch everything from 0 - 1000
+	      PALTYPE1a = "1";
+        } 	else {							// will catch everything from 2000+
+	      PALTYPE1a = "4";
+        }
+	    document.getElementById('palletheight2').value = PALTYPE1a;
+	}
+
+
+	function calculate_pha ()
+	{
+		var pha1;
+		var PH = document.getElementById('palletheight2').value;
+		var PW = document.getElementById('palletweight2').value;
+
+  		if (PW < PH) {		
+	      pha1 = PH;
+        } 	else if (PW > PH) {	
+	      pha1 = PW;
+        } 	else if (PW = PH) {				
+	      pha1 = PW;
+        } 	else {							
+	      pha1 = "OVER 1 PALLET";
+        }
+	    document.getElementById('KIRKNO').value = pha1;
+	}	
+
+
+	function calculate_KIRKNO2T ()
+	{
+        	var KTNO;
+		var KN = document.getElementById('KIRKNO').value;
+
+        	if (KN >= 2.2 && KN < 3.1) {		// will catch everything from 1500 - 2000	2-3
+	      KTNO = "FULL PALLET";
+        } 	else if (KN >= 1.2 && KN < 2.1) {	// will catch everything from 1000 - 1500	1-2
+	      KTNO = "HALF PALLET";
+        } 	else if (KN < 1.1) {			// will catch everything from 0 - 1000		0-1
+	      KTNO = "QUARTER PALLET";
+        } 	else {					// will catch everything from 2000+		4+
+	      KTNO = "OVER 1 PALLET";
+        }
+	    document.getElementById('KIRKTX').value = KTNO;
+	}
+
+
+
+
+
+
+</script>
+
+</tbody></table><br><meta name="viewport" content="width=device-width, initial-scale=1"><div class="row">
+<div class="column" style="background-color:#CBCBCB;">
+<p style="padding-left: 0px; font-size: 14px; font-family: Arial; line-height: .0; ">
+<b>Rectangular Pattern</b>
+	
+</p><p id="results">Maximum number of reels per layer: <b>16</b></p> <div class="center"><canvas id="myCanvas" width="350" height="350">&nbsp;</canvas></div> <p id="circles_image1" style="display: none;"><img src="file:///C:/Users/andyg/OneDrive/Desktop/ReelCalculator/circles_within_rectangle_rectangular_pattern.png" style="display: block; margin-left: auto; margin-right: auto;" width="100" height="100"></p> 
+
+</div>
+<div class="column" style="background-color:#BEBEBE;">
+<p style="padding-left: 0px; font-size: 14px; font-family: Arial; line-height: .0; ">
+
+<b>Triangular Pattern</b>
+
+</p><p id="results2">Maximum number of reels per layer: <b>16</b></p> <div class="center"><canvas id="myCanvas2" width="350" height="350">&nbsp;</canvas></div> <p id="circles_image2" style="display: none;"><img src="file:///C:/Users/andyg/OneDrive/Desktop/ReelCalculator/circles_within_rectangle_triangular_pattern.png" style="display: block; margin-left: auto; margin-right: auto;" width="100" height="100"></p> 
+
+<script>
+function Circle(x, y, r){
+	this.x = x;
+  this.y = y;
+  this.r = r;
+}function Rectangle(x, y, w, h){
+	this.x = x;
+  this.y = y;
+  this.w = w;
+  this.h = h;  
+}
+
+function calculateRectangle(){
+  var rw = $j("#rw").val() * 1;
+  var rh = $j("#rh").val() * 1;
+	var cd = $j("#cd").val() * 1;
+  var cs = $j("#cs").val() * 1;
+  if (rw > 0 && rh > 0 && cd > 0){
+    var canvas = document.getElementById('myCanvas');
+    var context = canvas.getContext('2d');
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    var scale = canvas.width / rw; 
+    if (canvas.height / rh < scale) scale = canvas.height / rh;
+    var rectangleOuter = new Rectangle(0, 0, rw, rh);
+    drawRectangle(rectangleOuter, "green", 2, "black");
+    var circleArray = [];
+    if ((cd + cs)< rw && (cd + cs) < rh) {
+      var posX = (cd / 2) + cs;
+      var posY = (cd / 2) + cs;
+      do  {
+        do {
+          var circle = new Circle(posX, posY, cd / 2);
+          circleArray.push(circle);
+          posX = posX + (cd + cs);
+        } while (posX + (cd / 2) + cs <= rw);
+        posX = (cd / 2) + cs;
+        posY = posY + cd + cs;
+      } while (posY + (cd / 2 ) + cs <= rh);
+      $j("#results").html("Maximum number of reels per layer: <b>" + circleArray.length + "</b>");
+    }  
+    for (var i = 0; i < circleArray.length; i++) {
+      drawCircle(circleArray[i], "white", 1, "black");
+    }
+  } else {
+  	;
+  }
+  function drawRectangle(rectangle, color, width, colorStroke){
+     context.beginPath();
+     context.rect(rectangle.x * scale, rectangle.y * scale, rectangle.w * scale, rectangle.h * scale);
+     context.fillStyle = color;
+     context.fill();
+     context.lineWidth = width;
+     context.strokeStyle = colorStroke;
+     context.stroke();   
+  }    
+  
+function drawCircle(circle, color, width, colorStroke){
+      context.beginPath();
+      context.arc(circle.x * scale, circle.y * scale, circle.r * scale, 0, 2 * Math.PI, false);
+      context.fillStyle = color;
+      context.fill();
+      context.lineWidth = width;
+      context.strokeStyle = colorStroke;
+      context.stroke();    
+  }   
+}
+
+function calculateRectangle2(){
+  var rw = $j("#rw").val() * 1;
+  var rh = $j("#rh").val() * 1;
+	var cd = $j("#cd").val() * 1;
+  var cs = $j("#cs").val() * 1;
+  if (rw > 0 && rh > 0 && cd > 0){
+    var canvas = document.getElementById('myCanvas2');
+    var context = canvas.getContext('2d');
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    var scale = canvas.width / rw; 
+    if (canvas.height / rh < scale) scale = canvas.height / rh;
+    var rectangleOuter = new Rectangle(0, 0, rw, rh);
+    drawRectangle(rectangleOuter, "green", 2, "black");
+    var circleArray = [];
+    if ((cd + cs) < rw && (cd + cs) < rh) {
+      var posX = cd / 2 + cs;
+      var posY = cd / 2 + cs;
+      var triangle = 0;
+      do  {
+        do {
+          var circle = new Circle(posX, posY, cd / 2);
+          circleArray.push(circle);
+          posX = posX + (cd + cs);
+        } while (posX + cd /2 + cs <= rw);
+        if (triangle == 0){
+          posX = (cd + 1.5*cs);
+          triangle = 1;
+        } else {
+          posX = cd / 2 + cs;
+          triangle = 0;
+        }
+        posY = posY + Math.pow(Math.pow((cd + cs),2) * 0.75,0.5);        
+      } while (posY + cd / 2 <= rh);
+  
+      $j("#results2").html("Maximum number of reels per layer: <b>" + circleArray.length + "</b>");
+    }  
+    for (var i = 0; i < circleArray.length; i++) {
+       drawCircle(circleArray[i], "white", 1, "black");
+    }
+  }
+  function drawRectangle(rectangle, color, width, colorStroke){
+     context.beginPath();
+     context.rect(rectangle.x * scale, rectangle.y * scale, rectangle.w * scale, rectangle.h * scale);
+     context.fillStyle = color;
+     context.fill();
+     context.lineWidth = width;
+     context.strokeStyle = colorStroke;
+     context.stroke();   
+  } 
+  
+function drawCircle(circle, color, width, colorStroke){
+      context.beginPath();
+      context.arc(circle.x * scale, circle.y * scale, circle.r * scale, 0, 2 * Math.PI, false);
+      context.fillStyle = color;
+      context.fill();
+      context.lineWidth = width;
+      context.strokeStyle = colorStroke;
+      context.stroke();    
+  }   
+}
+
+$j("#circles_image1").hide();
+$j("#circles_image2").hide();
+
+calculateRectangle();
+calculateRectangle2();
+
+</script>
+</div>
+<div class="column" style="background-color:#CBCBCB;">
+<p style="padding-left: 0px; font-size: 14px; font-family: Arial; line-height: .0; ">
+
+<b>Reel Dimensions</b>
+
+</p><p id="results2">Reel Diameter / OD (mm)</p> <div class="center"></div> <div style="position:relative; width:300px; height:300px; margin:auto;">
+
+    <!-- Reel Image -->
+    <img src="./reel.png" id="reelImage" style="width:270px; height:auto; position:absolute; left:25px; top:25px;">
+
+    <!-- Vertical Arrow (Width) -->
+    <div style="position:absolute; left:5px; top:40px; height:260px;">
+        <div style="position:absolute; top:0;">▲</div>
+        <div style="border-left:2px solid black; height:200px; margin-left:7px; position:relative; top:10px;"></div>
+        <div style="position:absolute; bottom:40;">▼</div>
+    </div>
+
+    <!-- Width Label -->
+    <div style="position:absolute;
+            background: transparent;
+            border: none;
+            text-align: center;
+            left:30px;
+            top:230px;
+            padding:1px 1px;
+            font-family: Arial;
+            font-weight:bold;
+            transform: rotate(-90deg);
+            transform-origin: left top;">
+            Reel Width:
+<input type="text" id="rlwidth1" size="1" readonly="" tabindex="-1" style="
+           text-align:center;
+           font-size: 16px;
+           border:none;
+           background:transparent;
+           outline:none;
+           pointer-events:none;
+           font-family:Arial;
+           font-weight:bold;
+       ">
+    mm
+</div>
+
+    <!-- Horizontal Arrow (Diameter) -->
+    <div style="position:absolute; left:70px; top:280px; width:180px;">
+        <span style="float:left; position:absolute;= top:0;=">◄</span>
+        <div style="border-top:2px solid black; margin:8px 10px;"></div>
+        <span style="position:absolute; right:0; top:0;">►</span>
+    </div>
+
+    <!-- Diameter Label -->
+    <div id="reelod" style="position:absolute;
+        background: transparent;
+        border: none;
+        text-align: center;
+        left:80px;
+        top:260px;
+        font-family: Arial;
+        padding:2px 5px;
+        font-weight:bold;">
+        Reel OD:
+<input style="
+           text-align:center;
+           font-size: 16px;
+           border:none;
+           background:transparent;
+           outline:none;
+           pointer-events:none;
+           font-family:Arial;
+           font-weight:bold;
+       " tabindex="-1" readonly="" size="1" id="cd1" type="text">
+mm
+        
+        </div>
+
+</div>
+
+ 
+
+
+</div></div><table cellpadding="2">
+
+
+
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+.column {	float: left;	  width: 45;	  padding: 10px;	  height: 385px;	}
+
+.row:after {	  content: "";	  display: table;	  clear: both;	}
+</style>
+
+
+
+</table></div></body></html>
