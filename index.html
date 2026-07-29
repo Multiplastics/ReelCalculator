@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
 
@@ -22,9 +22,12 @@
 
 <body>
 <p style="padding-left: 5px; font-size: 18px; font-family: Arial; line-height: .0; ">
-<b> The below will calculate the reels diameter, reel weight, pallet weight and reels per layer.</b>
+<b> This form will calculate the reel diameter, reel weight, pallet weight, reels per layer and reel price.</b>
 </p><p style="padding-left: 5px; font-size: 12px; font-family: Arial; line-height: .5; ">
-Fill in the boxes hightighted in yellow to calculate. You can also edit the Pallet Width, Pallet Length, Pallet Height, Film Density, Core Size and Core Wall if different. 
+Fill in the boxes hightighted in yellow to calculate. You can also edit the Pallet Width, Pallet Length, Pallet Height, Film Density, Core Size and Core Wall if different.
+</p><p>
+<p style="padding-left: 5px; font-size: 12px; font-family: Arial; line-height: .5;">
+<span style="color: red;"><b>THESE ARE THEORETICAL VALUES AND MAY DIFFER FROM MANUFACTURING DUE TO TOLERANCES</b></span>
 
 </p><p style="padding-left: 10px; font-size:14px; font-family: Arial">
 
@@ -80,6 +83,17 @@ mm&nbsp;&nbsp;&nbsp;&nbsp;</td>
 </td><td><input type="text" id="rlweight" readonly="readonly" size="3"> kg
 &nbsp;&nbsp;&nbsp;&nbsp;</td>
 
+
+<td><b> KG Price £</b>
+</td><td><input id="kgprice" name="kgprice" type="text" size="3" style="background-color: yellow;">
+/kg&nbsp;&nbsp;&nbsp;&nbsp;</td>
+
+<td><b> Reel Price £</b>
+</td><td><input type="text" id="rlprice" readonly="readonly" size="3"> 
+/kg&nbsp;&nbsp;&nbsp;&nbsp;</td>
+
+
+
 <td><b></b>
 </td><td>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -119,15 +133,20 @@ mm&nbsp;&nbsp;&nbsp;&nbsp;</td>
 		document.getElementById('mu').value = 
 		document.getElementById('core_eu').value = 
 		document.getElementById('thickness_eu').value = 
+		document.getElementById('kgprice').value = 
 		document.getElementById('cd').value = ''
 		document.getElementById('cd1').value = '';
 	}
 
 	function calculate_reelweight()
 	{
-		var m2 = parseFloat(document.getElementById('meters').value) * parseFloat(document.getElementById('rlwidth').value / 1000);
-		var gsmm2 = parseFloat(document.getElementById('mu').value) * parseFloat(document.getElementById('density').value);
+		var m2 = parseFloat(document.getElementById('meters').value) *
+         (parseFloat(document.getElementById('rlwidth').value) / 1000);
+		var gsmm2 = parseFloat(document.getElementById('mu').value) *
+            parseFloat(document.getElementById('density').value);
+		var kgprice = parseFloat(document.getElementById('kgprice').value) || 0;
 		document.getElementById('rlweight').value = (gsmm2 * m2 / 1000).toFixed(1);
+		document.getElementById('rlprice').value = ((gsmm2 * m2 / 1000).toFixed(1) * kgprice).toFixed(2);
 		document.getElementById('palletweight').value = (((gsmm2 * m2 / 1000).toFixed(1)) * parseFloat(document.getElementById('reelqty').value));
 		var maxpalht = parseFloat(document.getElementById('height').value) / parseFloat(document.getElementById('rlwidth').value);
 		document.getElementById('maxpalht').value = Math.floor(maxpalht);
@@ -140,6 +159,7 @@ mm&nbsp;&nbsp;&nbsp;&nbsp;</td>
 		document.getElementById('reelqty').value = 
 		document.getElementById('rlwidth').value = 
 		document.getElementById('height').value = 
+		document.getElementById('rlprice').value = ''
 		document.getElementById('palletweight').value = ''
 		document.getElementById('rlweight').value = ''
 		document.getElementById('maxpalht').value = '';
