@@ -748,13 +748,7 @@
 <div class="calculator-wrapper">
 
     <header class="page-header">
-        <h1>Reel and Pallet Calculator</h1>
-
-        <p>
-            Calculate reel diameter, reel weight, reel price, pallet weight,
-            pallet height and the maximum number of reels that can fit on each
-            pallet layer.
-        </p>
+        <h1>Multiplastics Reel &amp; Pallet Calculator</h1>
 
         <div class="required-key">
             <span class="required-key-box"></span>
@@ -997,6 +991,14 @@
                 onclick="resetCalculator()"
             >
                 Reset calculator
+            </button>
+
+            <button
+                class="button-outline"
+                type="button"
+                onclick="exportCalculationPDF()"
+            >
+                Export PDF
             </button>
 
         </div>
@@ -1246,6 +1248,9 @@
         </div>
     </section>
 </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <script>
     "use strict";
@@ -1861,6 +1866,310 @@
             top: 0,
             behavior: "smooth"
         });
+    }
+
+
+    function getSelectedMaterialName() {
+        const densitySelect = document.getElementById("density");
+        const selectedText = densitySelect.options[densitySelect.selectedIndex].text;
+        return selectedText.split("—")[0].trim();
+    }
+
+    function formatPdfDate(date) {
+        return date.toLocaleDateString("en-GB", {
+            day: "2-digit",
+            month: "long",
+            year: "numeric"
+        });
+    }
+
+    function formatPdfTime(date) {
+        return date.toLocaleTimeString("en-GB", {
+            hour: "2-digit",
+            minute: "2-digit"
+        });
+    }
+
+    function escapeHtml(value) {
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    function createPdfRow(label, value) {
+        return (
+            '<div style="display:flex;border-bottom:1px solid #d9e5dd;">' +
+                '<div style="width:58%;padding:7px 9px;font-weight:700;color:#34443a;">' +
+                    escapeHtml(label) +
+                '</div>' +
+                '<div style="width:42%;padding:7px 9px;text-align:right;color:#18271d;">' +
+                    escapeHtml(value) +
+                '</div>' +
+            '</div>'
+        );
+    }
+
+    function buildPdfReport() {
+        const now = new Date();
+        const densitySelect = document.getElementById("density");
+        const palletSelect = document.getElementById("palletType");
+        const rectangularCanvas = document.getElementById("myCanvas");
+        const triangularCanvas = document.getElementById("myCanvas2");
+
+        const priceValue = document.getElementById("rlprice").value;
+        const pricePerKg = document.getElementById("kgprice").value.trim();
+
+        const report = document.createElement("div");
+        report.style.position = "fixed";
+        report.style.left = "-10000px";
+        report.style.top = "0";
+        report.style.width = "794px";
+        report.style.padding = "38px";
+        report.style.background = "#ffffff";
+        report.style.color = "#24323c";
+        report.style.fontFamily = "Arial, Helvetica, sans-serif";
+        report.style.fontSize = "13px";
+        report.style.lineHeight = "1.4";
+
+        const reelRows = [
+            ["Film thickness", document.getElementById("mu").value + " µm"],
+            ["Reel length", document.getElementById("meters").value + " m"],
+            ["Reel width", document.getElementById("rlwidth").value + " mm"],
+            ["Material", getSelectedMaterialName()],
+            ["Density", densitySelect.value + " g/cm³"],
+            ["Number of reels", document.getElementById("reelqty").value],
+            ["Price per kilogram", pricePerKg ? "£" + Number(pricePerKg).toFixed(2) + "/kg" : "Not entered"]
+        ];
+
+        const palletRows = [
+            ["Pallet type", palletSelect.options[palletSelect.selectedIndex].text.trim()],
+            ["Maximum pallet height", document.getElementById("height").value + " mm"],
+            ["Spacing between reels", document.getElementById("cs").value + " mm"]
+        ];
+
+        const resultRows = [
+            ["Reel diameter / OD", document.getElementById("cd").value + " mm"],
+            ["Reel weight", document.getElementById("rlweight").value + " kg"],
+            ["Reel price", priceValue === "Price Required" ? priceValue : "£" + priceValue],
+            ["Total pallet weight", document.getElementById("palletweight").value + " kg"],
+            ["Layers required", document.getElementById("layersRequired").value],
+            ["Pallets required", document.getElementById("palletsRequired").value],
+            ["Maximum layers per pallet", document.getElementById("maxpalht").value]
+        ];
+
+        const reelRowsHtml = reelRows.map(row => createPdfRow(row[0], row[1])).join("");
+        const palletRowsHtml = palletRows.map(row => createPdfRow(row[0], row[1])).join("");
+        const resultRowsHtml = resultRows.map(row => createPdfRow(row[0], row[1])).join("");
+
+        report.innerHTML = `
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:5px solid #146E34;padding-bottom:18px;margin-bottom:22px;">
+                <div style="width:390px;">
+                    <img
+                        src="https://static.wixstatic.com/media/ea8520_cb4205dee03e4b148d39ca0fef202a80~mv2.jpg/v1/fill/w_387,h_81,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/banner_newls_edited.jpg"
+                        crossorigin="anonymous"
+                        style="display:block;width:387px;height:81px;object-fit:contain;"
+                        alt="Multiplastics logo"
+                    >
+                </div>
+                <div style="text-align:right;font-size:11px;color:#42554a;">
+                    <strong style="font-size:13px;color:#146E34;">Multiplastics (Europe) Limited</strong><br>
+                    Columbus House, 30 Manchester Road<br>
+                    Northwich, Cheshire, CW9 5ND<br><br>
+                    sales@multiplastics.co.uk<br>
+                    Tel: 01606 330011<br>
+                    www.multiplastics.co.uk
+                </div>
+            </div>
+
+            <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:22px;">
+                <div>
+                    <h1 style="margin:0;color:#146E34;font-size:27px;line-height:1.1;">Reel &amp; Pallet Calculation Report</h1>
+                    <p style="margin:6px 0 0;color:#68786e;">Generated by the Multiplastics Reel and Pallet Calculator</p>
+                </div>
+                <div style="text-align:right;color:#68786e;font-size:11px;">
+                    ${escapeHtml(formatPdfDate(now))}<br>
+                    ${escapeHtml(formatPdfTime(now))}
+                </div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:20px;">
+                <section style="border:1px solid #cbdacf;border-radius:8px;overflow:hidden;">
+                    <h2 style="margin:0;padding:10px 12px;background:#146E34;color:white;font-size:16px;">Reel information</h2>
+                    ${reelRowsHtml}
+                </section>
+                <section style="border:1px solid #cbdacf;border-radius:8px;overflow:hidden;">
+                    <h2 style="margin:0;padding:10px 12px;background:#146E34;color:white;font-size:16px;">Pallet information</h2>
+                    ${palletRowsHtml}
+                </section>
+            </div>
+
+            <section style="border:1px solid #cbdacf;border-radius:8px;overflow:hidden;margin-bottom:22px;">
+                <h2 style="margin:0;padding:10px 12px;background:#146E34;color:white;font-size:16px;">Calculated results</h2>
+                <div style="display:grid;grid-template-columns:1fr 1fr;">
+                    ${resultRowsHtml}
+                </div>
+            </section>
+
+            <div style="page-break-before:always;padding-top:4px;">
+                <h2 style="margin:0 0 14px;color:#146E34;font-size:21px;border-bottom:3px solid #146E34;padding-bottom:7px;">Pallet layouts</h2>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;">
+                    <section style="border:1px solid #cbdacf;border-radius:8px;padding:12px;text-align:center;">
+                        <h3 style="margin:0 0 4px;color:#146E34;font-size:16px;">Rectangular pattern</h3>
+                        <p style="margin:0 0 8px;color:#65756b;">${document.getElementById("results").innerHTML}</p>
+                        <img src="${rectangularCanvas.toDataURL("image/png")}" style="width:100%;max-width:315px;height:auto;" alt="Rectangular pallet pattern">
+                    </section>
+                    <section style="border:1px solid #cbdacf;border-radius:8px;padding:12px;text-align:center;">
+                        <h3 style="margin:0 0 4px;color:#146E34;font-size:16px;">Triangular pattern</h3>
+                        <p style="margin:0 0 8px;color:#65756b;">${document.getElementById("results2").innerHTML}</p>
+                        <img src="${triangularCanvas.toDataURL("image/png")}" style="width:100%;max-width:315px;height:auto;" alt="Triangular pallet pattern">
+                    </section>
+                </div>
+
+                <section style="margin-top:20px;border:1px solid #cbdacf;border-radius:8px;padding:16px;">
+                    <h3 style="margin:0 0 12px;color:#146E34;font-size:16px;">Reel dimensions</h3>
+                    <div style="display:flex;justify-content:center;gap:50px;padding:12px;background:#f2f8f4;border-radius:7px;">
+                        <div style="text-align:center;">
+                            <div style="font-size:11px;color:#65756b;text-transform:uppercase;font-weight:700;">Reel width</div>
+                            <div style="font-size:25px;font-weight:700;color:#146E34;">${escapeHtml(document.getElementById("rlwidth").value)} mm</div>
+                        </div>
+                        <div style="text-align:center;">
+                            <div style="font-size:11px;color:#65756b;text-transform:uppercase;font-weight:700;">Reel outside diameter</div>
+                            <div style="font-size:25px;font-weight:700;color:#146E34;">${escapeHtml(document.getElementById("cd").value)} mm</div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <div style="margin-top:24px;padding-top:10px;border-top:1px solid #bfcfc4;text-align:center;color:#68786e;font-size:10px;">
+                Multiplastics (Europe) Limited &nbsp;•&nbsp; Reel &amp; Pallet Calculator &nbsp;•&nbsp; www.multiplastics.co.uk
+            </div>
+        `;
+
+        document.body.appendChild(report);
+        return report;
+    }
+
+    async function exportCalculationPDF() {
+        if (!validateMainInputs()) {
+            return;
+        }
+
+        if (document.getElementById("cd").value === "—") {
+            calculateMain();
+        }
+
+        if (!window.html2canvas || !window.jspdf) {
+            showValidation(
+                "The PDF export library could not be loaded. Please check your internet connection and try again."
+            );
+            return;
+        }
+
+        clearValidation();
+        const report = buildPdfReport();
+
+        try {
+            const images = Array.from(report.querySelectorAll("img"));
+            await Promise.all(images.map(function (image) {
+                if (image.complete) {
+                    return Promise.resolve();
+                }
+
+                return new Promise(function (resolve) {
+                    image.onload = resolve;
+                    image.onerror = resolve;
+                });
+            }));
+
+            const canvas = await html2canvas(report, {
+                scale: 2,
+                useCORS: true,
+                allowTaint: false,
+                backgroundColor: "#ffffff",
+                logging: false
+            });
+
+            const imageData = canvas.toDataURL("image/jpeg", 0.96);
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF({
+                orientation: "portrait",
+                unit: "mm",
+                format: "a4",
+                compress: true
+            });
+
+            const pageWidth = pdf.internal.pageSize.getWidth();
+            const pageHeight = pdf.internal.pageSize.getHeight();
+            const margin = 8;
+            const usableWidth = pageWidth - (margin * 2);
+            const renderedHeight = canvas.height * usableWidth / canvas.width;
+
+            let heightRemaining = renderedHeight;
+            let position = margin;
+
+            pdf.addImage(
+                imageData,
+                "JPEG",
+                margin,
+                position,
+                usableWidth,
+                renderedHeight,
+                undefined,
+                "FAST"
+            );
+
+            heightRemaining -= pageHeight - (margin * 2);
+
+            while (heightRemaining > 0) {
+                position = heightRemaining - renderedHeight + margin;
+                pdf.addPage();
+                pdf.addImage(
+                    imageData,
+                    "JPEG",
+                    margin,
+                    position,
+                    usableWidth,
+                    renderedHeight,
+                    undefined,
+                    "FAST"
+                );
+                heightRemaining -= pageHeight - (margin * 2);
+            }
+
+            const pageCount = pdf.getNumberOfPages();
+            for (let page = 1; page <= pageCount; page++) {
+                pdf.setPage(page);
+                pdf.setFontSize(8);
+                pdf.setTextColor(90, 105, 96);
+                pdf.text(
+                    "Page " + page + " of " + pageCount,
+                    pageWidth - margin,
+                    pageHeight - 4,
+                    { align: "right" }
+                );
+            }
+
+            const reelWidth = document.getElementById("rlwidth").value;
+            const reelLength = document.getElementById("meters").value;
+            const material = getSelectedMaterialName();
+            const filename =
+                "Multiplastics Reel Calculation - " +
+                reelWidth + "mm x " +
+                reelLength + "m - " +
+                material + ".pdf";
+
+            pdf.save(filename);
+        } catch (error) {
+            console.error(error);
+            showValidation(
+                "The PDF could not be created. Please try again after the page and logo have fully loaded."
+            );
+        } finally {
+            report.remove();
+        }
     }
 
     function initialiseCanvases() {
