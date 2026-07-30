@@ -1,597 +1,1885 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,maximum-scale=1.0">
-<link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-<style type="text/css" media="screen"></style>
-<style type="text/css" media="print">
- 
-@media print {
-    @page {size: A4 landscape;max-height:100%; max-width:100%}
+    <title>Reel and Pallet Calculator</title>
 
-</style>
+    <style>
+        :root {
+            --primary: #146E34;
+            --primary-dark: #0f5a2a;
+            --primary-light: #e9f7ed;
+            --accent: #f4b942;
+            --accent-light: #fff8df;
+            --background: #000000;
+            --card: #ffffff;
+            --text: #24323c;
+            --muted: #637581;
+            --border: #d5e0e6;
+            --result: #eef7fb;
+            --success: #2d7156;
+            --warning: #9d352f;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+            --radius: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            padding: 24px;
+            background: var(--background);
+            color: var(--text);
+            font-family: Arial, Helvetica, sans-serif;
+            line-height: 1.5;
+        }
+
+        .calculator-wrapper {
+            width: 100%;
+            max-width: 1250px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 22px;
+            padding: 30px;
+            border-radius: var(--radius);
+            color: #ffffff;
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--primary-dark),
+                    var(--primary)
+                );
+            box-shadow: var(--shadow);
+        }
+
+        .page-header::after {
+            content: "";
+            position: absolute;
+            right: -70px;
+            bottom: -110px;
+            width: 260px;
+            height: 260px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.07);
+        }
+
+        .page-header h1 {
+            position: relative;
+            z-index: 1;
+            margin: 0 0 8px;
+            font-size: clamp(26px, 4vw, 38px);
+            line-height: 1.15;
+        }
+
+        .page-header p {
+            position: relative;
+            z-index: 1;
+            max-width: 850px;
+            margin: 0;
+            color: rgba(255, 255, 255, 0.88);
+            font-size: 15px;
+        }
+
+        .notice {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            margin-bottom: 22px;
+            padding: 15px 18px;
+            border: 1px solid #f0d5d2;
+            border-left: 5px solid var(--warning);
+            border-radius: 10px;
+            background: #fff8f7;
+            color: #6f2c28;
+            font-size: 13px;
+        }
+
+        .notice-icon {
+            flex: 0 0 auto;
+            font-size: 19px;
+            line-height: 1.1;
+        }
+
+        .card {
+            margin-bottom: 22px;
+            padding: 24px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--card);
+            box-shadow: var(--shadow);
+        }
+
+        .card-header {
+            display: flex;
+            gap: 14px;
+            align-items: center;
+            margin-bottom: 22px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .step-number {
+            display: flex;
+            flex: 0 0 auto;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: #ffffff;
+            font-weight: 700;
+        }
+
+        .card-header h2 {
+            margin: 0;
+            color: var(--primary-dark);
+            font-size: 21px;
+        }
+
+        .card-header p {
+            margin: 2px 0 0;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .input-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .field-group {
+            min-width: 0;
+        }
+
+        .pallet-type-field {
+            grid-column: span 2;
+            max-width: 390px;
+        }
+
+        .field-group label {
+            display: block;
+            margin-bottom: 7px;
+            color: var(--text);
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .input-with-unit {
+            display: flex;
+            align-items: stretch;
+            width: 100%;
+        }
+
+        input,
+        select {
+            width: 100%;
+            min-width: 0;
+            height: 45px;
+            padding: 10px 12px;
+            border: 1px solid #bacad3;
+            border-radius: 8px;
+            background: #ffffff;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 15px;
+            outline: none;
+            transition:
+                border-color 0.2s ease,
+                box-shadow 0.2s ease,
+                background-color 0.2s ease;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(19, 79, 115, 0.13);
+        }
+
+        .required-input {
+            border-color: #dfbd59;
+            background: var(--accent-light);
+        }
+
+        .required-input:focus {
+            border-color: #c89917;
+            box-shadow: 0 0 0 3px rgba(244, 185, 66, 0.2);
+        }
+
+        .unit {
+            display: flex;
+            flex: 0 0 auto;
+            align-items: center;
+            min-width: 52px;
+            padding: 0 10px;
+            border: 1px solid #bacad3;
+            border-left: 0;
+            border-radius: 0 8px 8px 0;
+            background: #edf2f5;
+            color: var(--muted);
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        .input-with-unit input,
+        .input-with-unit select {
+            border-radius: 8px 0 0 8px;
+        }
+
+        .field-help {
+            display: block;
+            margin-top: 5px;
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .section-divider {
+            margin: 24px 0;
+            border: 0;
+            border-top: 1px solid var(--border);
+        }
+
+        .subheading {
+            margin: 0 0 16px;
+            color: var(--primary-dark);
+            font-size: 16px;
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        button {
+            min-height: 46px;
+            padding: 12px 21px;
+            border: 0;
+            border-radius: 9px;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition:
+                transform 0.15s ease,
+                background-color 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        button:hover {
+            transform: translateY(-1px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .button-primary {
+            background: var(--primary);
+            color: #ffffff;
+            box-shadow: 0 6px 15px rgba(19, 79, 115, 0.2);
+        }
+
+        .button-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .button-secondary {
+            border: 1px solid var(--border);
+            background: #edf2f5;
+            color: var(--primary-dark);
+        }
+
+        .button-secondary:hover {
+            background: #e3ebef;
+        }
+
+        .button-outline {
+            border: 1px solid var(--primary);
+            background: #ffffff;
+            color: var(--primary);
+        }
+
+        .button-outline:hover {
+            background: var(--primary-light);
+        }
+
+        .validation-message {
+            display: none;
+            margin-top: 16px;
+            padding: 12px 14px;
+            border-radius: 8px;
+            background: #fff1ef;
+            color: #8a2f28;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .validation-message.visible {
+            display: block;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 15px;
+        }
+
+        .result-box {
+            min-height: 76px;
+            padding: 12px 15px;
+            border: 1px solid #cfe1eb;
+            border-radius: 12px;
+            background: var(--result);
+        }
+
+        .result-label {
+            display: block;
+            margin-bottom: 4px;
+            color: var(--muted);
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.45px;
+        }
+
+        .result-value-line {
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+        }
+
+        .result-value {
+            width: auto;
+            height: auto;
+            padding: 0;
+            border: 0;
+            border-radius: 0;
+            background: transparent;
+            color: var(--primary-dark);
+            font-size: 21px;
+            font-weight: 700;
+            box-shadow: none;
+            pointer-events: none;
+        }
+
+        .result-value:focus {
+            border: 0;
+            box-shadow: none;
+        }
+
+        .result-unit {
+            color: var(--muted);
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .layer-layout {
+            display: block;
+        }
+
+        .layer-entry {
+            padding: 20px;
+            border: 1px solid #eadcae;
+            border-radius: 12px;
+            background: #fffaf0;
+        }
+
+        .layer-entry h3 {
+            margin: 0 0 6px;
+            color: var(--primary-dark);
+            font-size: 17px;
+        }
+
+        .layer-entry p {
+            margin: 0 0 16px;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .layer-results {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 15px;
+        }
+
+        .transport-output {
+            min-height: 76px;
+            padding: 12px 15px;
+            border: 1px solid #cfe1eb;
+            border-radius: 12px;
+            background: var(--result);
+        }
+
+        #KIRKTX {
+            height: auto;
+            padding: 0;
+            border: 0;
+            background: transparent;
+            color: var(--primary-dark);
+            font-size: 18px;
+            font-weight: 700;
+            box-shadow: none;
+            pointer-events: none;
+        }
+
+        .visual-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 20px;
+        }
+
+        .visual-card {
+            overflow: hidden;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            background: #ffffff;
+        }
+
+        .visual-card-header {
+            padding: 16px 18px;
+            border-bottom: 1px solid var(--border);
+            background: var(--primary-light);
+        }
+
+        .visual-card-header h3 {
+            margin: 0 0 4px;
+            color: var(--primary-dark);
+            font-size: 16px;
+        }
+
+        .visual-card-header p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .visual-content {
+            min-height: 360px;
+            padding: 16px;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            max-width: 350px;
+            height: auto;
+            margin: 0 auto;
+            border-radius: 8px;
+            background: #f7fafb;
+        }
+
+        .reel-diagram {
+            position: relative;
+            width: 100%;
+            max-width: 320px;
+            height: 320px;
+            margin: 6px auto 0;
+        }
+
+        .reel-image {
+            position: absolute;
+            top: 34px;
+            left: 40px;
+            width: 245px;
+            max-width: calc(100% - 70px);
+            height: auto;
+        }
+
+        .vertical-measure {
+            position: absolute;
+            top: 45px;
+            left: 10px;
+            height: 220px;
+        }
+
+        .vertical-measure::before {
+            content: "";
+            position: absolute;
+            top: 12px;
+            bottom: 12px;
+            left: 8px;
+            border-left: 2px solid var(--text);
+        }
+
+        .arrow-up,
+        .arrow-down {
+            position: absolute;
+            left: 0;
+            font-size: 16px;
+        }
+
+        .arrow-up {
+            top: 0;
+        }
+
+        .arrow-down {
+            bottom: 0;
+        }
+
+        .vertical-label {
+            position: absolute;
+            top: 214px;
+            left: 26px;
+            width: 210px;
+            color: var(--text);
+            font-size: 13px;
+            font-weight: 700;
+            transform: rotate(-90deg);
+            transform-origin: left top;
+        }
+
+        .horizontal-measure {
+            position: absolute;
+            bottom: 24px;
+            left: 74px;
+            width: 180px;
+            border-top: 2px solid var(--text);
+        }
+
+        .horizontal-measure::before,
+        .horizontal-measure::after {
+            position: absolute;
+            top: -12px;
+            font-size: 16px;
+        }
+
+        .horizontal-measure::before {
+            content: "◄";
+            left: -6px;
+        }
+
+        .horizontal-measure::after {
+            content: "►";
+            right: -6px;
+        }
+
+        .diameter-label {
+            position: absolute;
+            right: 35px;
+            bottom: 40px;
+            left: 70px;
+            text-align: center;
+            color: var(--text);
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .diagram-value {
+            display: inline;
+            width: 52px;
+            height: auto;
+            padding: 0;
+            border: 0;
+            background: transparent;
+            color: var(--primary-dark);
+            font-weight: 700;
+            text-align: center;
+            box-shadow: none;
+            pointer-events: none;
+        }
+
+        .empty-state {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 320px;
+            padding: 25px;
+            color: var(--muted);
+            text-align: center;
+            font-size: 13px;
+        }
+
+        .required-key {
+            display: inline-flex;
+            gap: 7px;
+            align-items: center;
+            margin-top: 14px;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 12px;
+        }
+
+        .required-key-box {
+            width: 18px;
+            height: 14px;
+            border: 1px solid #dfbd59;
+            border-radius: 3px;
+            background: var(--accent-light);
+        }
+
+        .footer-note {
+            padding: 6px 10px 20px;
+            color: #d1d1d1;
+            text-align: center;
+            font-size: 11px;
+        }
+
+        @media (max-width: 1050px) {
+            .input-grid,
+            .results-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .visual-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .visual-card:last-child {
+                grid-column: 1 / -1;
+            }
+        }
+
+        @media (max-width: 760px) {
+            body {
+                padding: 12px;
+            }
+
+            .page-header,
+            .card {
+                padding: 20px;
+            }
+
+            .layer-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .layer-results {
+                grid-template-columns: 1fr;
+            }
+
+            .visual-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .visual-card:last-child {
+                grid-column: auto;
+            }
+
+            .visual-content {
+                min-height: auto;
+            }
+        }
+
+        @media (max-width: 540px) {
+            .input-grid,
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .pallet-type-field {
+                grid-column: auto;
+                max-width: none;
+            }
+
+            .actions {
+                display: grid;
+                grid-template-columns: 1fr;
+            }
+
+            button {
+                width: 100%;
+            }
+
+            .card-header {
+                align-items: flex-start;
+            }
+
+            .notice {
+                font-size: 12px;
+            }
+        }
+
+        @media print {
+            @page {
+                size: A4 landscape;
+                margin: 10mm;
+            }
+
+            body {
+                padding: 0;
+                background: #ffffff;
+            }
+
+            .calculator-wrapper {
+                max-width: none;
+            }
+
+            .page-header,
+            .card,
+            .notice {
+                box-shadow: none;
+            }
+
+            .actions,
+            .validation-message,
+            .footer-note {
+                display: none !important;
+            }
+
+            .card,
+            .visual-card,
+            .notice {
+                break-inside: avoid;
+            }
+        }
+    </style>
 </head>
 
-<script type="text/javascript" src=".saved_resource"></script>
-<script type="text/javascript" src=".saved_resource(1)"></script>
-<script src="jquery.min.js.download"> </script>
-<script> var view = "document";var $j = jQuery.noConflict();   </script>
-
 <body>
-<p style="padding-left: 5px; font-size: 18px; font-family: Arial; line-height: .0; ">
-<b> This form will calculate the reel diameter, reel weight, pallet weight, reels per layer and reel price.</b>
-</p><p style="padding-left: 5px; font-size: 12px; font-family: Arial; line-height: .5; ">
-Fill in the boxes hightighted in yellow to calculate. You can also edit the Pallet Width, Pallet Length, Pallet Height, Film Density, Core Size and Core Wall if different.
-</p><p>
-<p style="padding-left: 5px; font-size: 12px; font-family: Arial; line-height: .5;">
-<span style="color: red;"><b>THESE ARE THEORETICAL VALUES AND MAY DIFFER FROM MANUFACTURING DUE TO TOLERANCES</b></span>
 
-</p><p style="padding-left: 10px; font-size:14px; font-family: Arial">
-
-<style>
-table {
-	border-collapse: collapse;
-}
-</style>
-
-</p><table style="width:625; font-size:14px; font-family: Arial; line-height: 1; border: 2px solid red;">
-
-<tbody><tr>
-<td><b> Film Thickness</b>&nbsp;&nbsp;
-</td><td><input id="mu" name="mu" type="text" size="3" style="background-color: yellow;"> mu</td>
-<td></td><td></td>
-
-<td><b> Reel Length</b>
-</td><td><input id="meters" name="meters" type="text" size="3" style="background-color: yellow;"> meters&nbsp;&nbsp;&nbsp;&nbsp;</td>
-
-<td><b> Reel Width</b>
-</td><td><input id="rlwidth" name="rlwidth" type="text" size="3" style="background-color: yellow;">
-mm&nbsp;&nbsp;&nbsp;&nbsp;</td>
-
-<td><b> Reel Qty</b>
-</td><td><input id="reelqty" name="reelqty" type="text" size="3" style="background-color: yellow;">
-&nbsp;&nbsp;&nbsp;&nbsp;</td>
-</tr>
-
-<tr>
-<td><b> Pallet Width</b>
-</td><td><input id="rw" name="rw" value="1200" type="text" size="3"> mm</td>
-<td></td><td><font color="white">. . .</font></td>
-
-<td><b> Pallet Length&nbsp;</b>
-</td><td><input id="rh" name="rh" value="1000" type="text" size="3"> mm
-
-</td><td><b> Pallet Height&nbsp;&nbsp;&nbsp;</b>
-</td><td><input id="height" name="height" value="1500" type="text" size="3"> mm
-
-</td><td><b> Film Density&nbsp;&nbsp;</b>
-</td><td><input id="density" name="density" value="0.91" type="text" size="3"> PP=0.91 &nbsp; PET=1.4&nbsp;&nbsp;</td>
-</tr>
-
-<tr>
-<td><b> Core Size</b>
-</td><td><input id="core_euxx" name="core_euxx" value="76" type="text" size="3"> mm</td>
-<td></td><td></td>
-
-<td><b> Core Wall &nbsp;&nbsp;&nbsp;&nbsp;</b>
-</td><td><input id="thickness_euxx" name="thickness_euxx" value="9.6" type="text" size="3"> mm</td>
-
-<td><b> Reel Weight</b>
-</td><td><input type="text" id="rlweight" readonly="readonly" size="3"> kg
-&nbsp;&nbsp;&nbsp;&nbsp;</td>
-
-
-<td><b> KG Price £</b>
-</td><td><input id="kgprice" name="kgprice" type="text" size="3" style="background-color: yellow;">
-/kg&nbsp;&nbsp;&nbsp;&nbsp;</td>
-
-<td><b> Reel Price £</b>
-</td><td><input type="text" id="rlprice" readonly="readonly" size="3"> 
-/kg&nbsp;&nbsp;&nbsp;&nbsp;</td>
-
-
-
-<td><b></b>
-</td><td>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-</td>
-</tr>
-  
-<tr>
-<td><b> Spacing&nbsp;</b>
-</td><td><input id="cs" name="cs" value="1" type="text" size="3"> mm
-</td>
-<td></td><td></td>
-
-<td><b> Reel OD</b></td>
-<td><input type="text" id="cd" readonly="readonly" size="3"> mm</td>
-
-<td><b> Pallet Weight</b>
-</td><td><input type="text" id="palletweight" readonly="readonly" size="3"> kg
-&nbsp;&nbsp;
-</td>
-
-<td><b> Max No. Layers</b></td>
-<td><input type="text" id="maxpalht" readonly="readonly" size="3"> &nbsp;&nbsp; </td>
-</tr></tbody></table>
-
-<script language="JavaScript">	function calculate_eu ()
-	{
-		
-		var meterage_caliper = parseFloat(document.getElementById('meters').value) * parseFloat(document.getElementById('mu').value);
-		var core = parseFloat(document.getElementById('core_euxx').value);
-		var twice_thick = parseFloat(document.getElementById('thickness_euxx').value) * 2;
-		var core_thick = Math.pow((twice_thick + core), 2);
-		document.getElementById('cd').value = Math.round(Math.sqrt(4 * meterage_caliper / Math.PI + core_thick))+1;
-		document.getElementById('cd1').value = Math.round(Math.sqrt(4 * meterage_caliper / Math.PI + core_thick))+1
-	}
-	{
-		document.getElementById('meters').value = 
-		document.getElementById('mu').value = 
-		document.getElementById('core_eu').value = 
-		document.getElementById('thickness_eu').value = 
-		document.getElementById('kgprice').value = 
-		document.getElementById('cd').value = ''
-		document.getElementById('cd1').value = '';
-	}
-
-	function calculate_reelweight()
-	{
-		var m2 = parseFloat(document.getElementById('meters').value) *
-         (parseFloat(document.getElementById('rlwidth').value) / 1000);
-		var gsmm2 = parseFloat(document.getElementById('mu').value) *
-            parseFloat(document.getElementById('density').value);
-		var kgprice = parseFloat(document.getElementById('kgprice').value) || 0;
-		document.getElementById('rlweight').value = (gsmm2 * m2 / 1000).toFixed(1);
-		document.getElementById('rlprice').value = ((gsmm2 * m2 / 1000).toFixed(1) * kgprice).toFixed(2);
-		document.getElementById('palletweight').value = (((gsmm2 * m2 / 1000).toFixed(1)) * parseFloat(document.getElementById('reelqty').value));
-		var maxpalht = parseFloat(document.getElementById('height').value) / parseFloat(document.getElementById('rlwidth').value);
-		document.getElementById('maxpalht').value = Math.floor(maxpalht);
-    		document.getElementById('rlwidth1').value = document.getElementById('rlwidth').value;
-	}
-	{
-		document.getElementById('density').value = 0.91
-		document.getElementById('mu').value = 
-		document.getElementById('meters').value = 
-		document.getElementById('reelqty').value = 
-		document.getElementById('rlwidth').value = 
-		document.getElementById('height').value = 
-		document.getElementById('rlprice').value = ''
-		document.getElementById('palletweight').value = ''
-		document.getElementById('rlweight').value = ''
-		document.getElementById('maxpalht').value = '';
-	}</script>
-
-<div>
-<p style="padding-left: 0px; font-size: 5px; font-family: Arial; line-height: .0; ">
-
-<input value="Calculate" onclick="calculate_eu(); calculateRectangle(); calculateRectangle2(); calculate_reelweight(); updateReelLabels();" type="button">
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<input value="Print Page" onclick="window.print()" type="button">
-<br>
-</p><p style="padding-left: 0px; font-size: 25px; font-family: Arial; line-height: .0; ">
-</p><p style="padding-left: 5px; font-size: 14px; font-family: Arial; line-height: .0; ">
-<br>Once calculated, enter the number of reels per layer here:<br>
-
-
-
-</p><table cellpadding="2">
-<tbody><tr>
-</tr></tbody></table><div>
-</div><table style="width:800; font-size:14px; font-family: Arial; border: 2px solid black;">
-
-<tbody><tr>
-<td> <b> Reel Layer Qty &nbsp; </b></td> <td><input id="mlayer" name="mlayer" value="" type="text" size="3" style="background-color: yellow;"> 
-</td><td> <input value="Calculate" onclick="calculate_totlay(); calculate_palhgt(); calculate_reelweight(); calculate_palsty(); calculate_palsty1(); calculate_palstya(); calculate_palsty1a(); calculate_pha(); calculate_KIRKNO2T();" type="button"> </td>
-<td> </td>
-</tr>
-
-<tr>
-<td> Total Layers Required &nbsp;&nbsp; </td>
-<td> <input type="text" id="totnlay" readonly="readonly" size="3"> </td>
-<td> Total Pallet Height &nbsp;&nbsp; </td>
-<td> <input type="text" id="palhgt" readonly="readonly" size="3"> mm &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td>
-
-</tr><tr>
-<td> <b> Transport Load Type </b></td>
-<td> <input type="text" id="KIRKTX" readonly="readonly" size="20">  </td>
-<td> </td>
-<td> </td>
-</tr>
-
-
-
-<input type="hidden" id="palletweight1" readonly="readonly" size="20" value="Half Pallet">
-<input type="hidden" id="palletweight2" readonly="readonly" size="3" value="2">
-<input type="hidden" id="palletheight1" readonly="readonly" size="20" value="Quarter Pallet">
-<input type="hidden" id="palletheight2" readonly="readonly" size="3" value="1">
-<input type="hidden" id="KIRKNO" readonly="readonly" size="20" value="2">
-
-
-<script language="JavaScript">
-
-	function calculate_totlay ()
-	{
-		var totnlay = parseFloat(document.getElementById('reelqty').value) / parseFloat(document.getElementById('mlayer').value);
-		document.getElementById('totnlay').value = Math.ceil(totnlay);
-	}
-	{
-		document.getElementById('mlayer').value = 
-		document.getElementById('reelqty').value = 
-		document.getElementById('totnlay').value = '';
-	}
-	
-	function calculate_palhgt ()
-	{
-		var palhgt = (parseFloat(document.getElementById('totnlay').value) * parseFloat(document.getElementById('rlwidth').value) + 200);
-		document.getElementById('palhgt').value = (palhgt);
-	}
-	{
-		document.getElementById('rlwidth').value = 
-		document.getElementById('totnlay').value = 
-		document.getElementById('palhgt').value = '';
-	}
-	
-	function calculate_palsty(palletweight)
-	{
-        	var PALTYPE;
-		var myOldVal = document.getElementById('palletweight').value;
-
-        	if (myOldVal >= 500 && myOldVal < 1001) {		// will catch everything from 500 - 999
-	      PALTYPE = "Full Pallet";
-        } 	else if (myOldVal >= 250 && myOldVal < 500) {		// will catch everything from 250 - 499
-	      PALTYPE = "Half Pallet";
-        } 	else if (myOldVal < 250) {				// will catch everything from 0 - 249
-	      PALTYPE = "Quarter Pallet";
-        } 	else {							// will catch everything from 1000+
-	      PALTYPE = "OVER 1 PALLET";
-        }
-	    document.getElementById('palletweight1').value = PALTYPE;
-	}
-
-	function calculate_palsty1(palhgt)
-	{
-        	var PALTYPE1;
-		var myOldVal1 = document.getElementById('palhgt').value;
-
-        	if (myOldVal1 >= 1500 && myOldVal1 < 2001) {		// will catch everything from 1500 - 2000
-	      PALTYPE1 = "Full Pallet";
-        } 	else if (myOldVal1 >= 1000 && myOldVal1 < 1500) {	// will catch everything from 1000 - 1500
-	      PALTYPE1 = "Half Pallet";
-        } 	else if (myOldVal1 < 1000) {				// will catch everything from 0 - 1000
-	      PALTYPE1 = "Quarter Pallet";
-        } 	else {							// will catch everything from 2000+
-	      PALTYPE1 = "OVER 1 PALLET";
-        }
-	    document.getElementById('palletheight1').value = PALTYPE1;
-	}
-
-
-
-function calculate_palstya(palletweight)
-	{
-        	var PALTYPEa;
-		var myOldVal = document.getElementById('palletweight').value;
-
-        	if (myOldVal >= 500 && myOldVal < 1001) {		// will catch everything from 500 - 999
-	      PALTYPEa = "3";
-        } 	else if (myOldVal >= 250 && myOldVal < 500) {		// will catch everything from 250 - 499
-	      PALTYPEa = "2";
-        } 	else if (myOldVal < 250) {				// will catch everything from 0 - 249
-	      PALTYPEa = "1";
-        } 	else {							// will catch everything from 1000+
-	      PALTYPEa = "4";
-        }
-	    document.getElementById('palletweight2').value = PALTYPEa;
-	}
-
-	function calculate_palsty1a(palhgt)
-	{
-        	var PALTYPE1a;
-		var myOldVal1 = document.getElementById('palhgt').value;
-
-        	if (myOldVal1 >= 1500 && myOldVal1 < 2001) {		// will catch everything from 1500 - 2000
-	      PALTYPE1a = "3";
-        } 	else if (myOldVal1 >= 1000 && myOldVal1 < 1500) {	// will catch everything from 1000 - 1500
-	      PALTYPE1a = "2";
-        } 	else if (myOldVal1 < 1000) {				// will catch everything from 0 - 1000
-	      PALTYPE1a = "1";
-        } 	else {							// will catch everything from 2000+
-	      PALTYPE1a = "4";
-        }
-	    document.getElementById('palletheight2').value = PALTYPE1a;
-	}
-
-
-	function calculate_pha ()
-	{
-		var pha1;
-		var PH = document.getElementById('palletheight2').value;
-		var PW = document.getElementById('palletweight2').value;
-
-  		if (PW < PH) {		
-	      pha1 = PH;
-        } 	else if (PW > PH) {	
-	      pha1 = PW;
-        } 	else if (PW = PH) {				
-	      pha1 = PW;
-        } 	else {							
-	      pha1 = "OVER 1 PALLET";
-        }
-	    document.getElementById('KIRKNO').value = pha1;
-	}	
-
-
-	function calculate_KIRKNO2T ()
-	{
-        	var KTNO;
-		var KN = document.getElementById('KIRKNO').value;
-
-        	if (KN >= 2.2 && KN < 3.1) {		// will catch everything from 1500 - 2000	2-3
-	      KTNO = "FULL PALLET";
-        } 	else if (KN >= 1.2 && KN < 2.1) {	// will catch everything from 1000 - 1500	1-2
-	      KTNO = "HALF PALLET";
-        } 	else if (KN < 1.1) {			// will catch everything from 0 - 1000		0-1
-	      KTNO = "QUARTER PALLET";
-        } 	else {					// will catch everything from 2000+		4+
-	      KTNO = "OVER 1 PALLET";
-        }
-	    document.getElementById('KIRKTX').value = KTNO;
-	}
-
-
-
-
-
-
-</script>
-
-</tbody></table><br><meta name="viewport" content="width=device-width, initial-scale=1"><div class="row">
-<div class="column" style="background-color:#CBCBCB;">
-<p style="padding-left: 0px; font-size: 14px; font-family: Arial; line-height: .0; ">
-<b>Rectangular Pattern</b>
-	
-</p><p id="results">Maximum number of reels per layer: <b>16</b></p> <div class="center"><canvas id="myCanvas" width="350" height="350">&nbsp;</canvas></div> <p id="circles_image1" style="display: none;"><img src="file:///C:/Users/andyg/OneDrive/Desktop/ReelCalculator/circles_within_rectangle_rectangular_pattern.png" style="display: block; margin-left: auto; margin-right: auto;" width="100" height="100"></p> 
-
-</div>
-<div class="column" style="background-color:#BEBEBE;">
-<p style="padding-left: 0px; font-size: 14px; font-family: Arial; line-height: .0; ">
-
-<b>Triangular Pattern</b>
-
-</p><p id="results2">Maximum number of reels per layer: <b>16</b></p> <div class="center"><canvas id="myCanvas2" width="350" height="350">&nbsp;</canvas></div> <p id="circles_image2" style="display: none;"><img src="file:///C:/Users/andyg/OneDrive/Desktop/ReelCalculator/circles_within_rectangle_triangular_pattern.png" style="display: block; margin-left: auto; margin-right: auto;" width="100" height="100"></p> 
-
-<script>
-function Circle(x, y, r){
-	this.x = x;
-  this.y = y;
-  this.r = r;
-}function Rectangle(x, y, w, h){
-	this.x = x;
-  this.y = y;
-  this.w = w;
-  this.h = h;  
-}
-
-function calculateRectangle(){
-  var rw = $j("#rw").val() * 1;
-  var rh = $j("#rh").val() * 1;
-	var cd = $j("#cd").val() * 1;
-  var cs = $j("#cs").val() * 1;
-  if (rw > 0 && rh > 0 && cd > 0){
-    var canvas = document.getElementById('myCanvas');
-    var context = canvas.getContext('2d');
-    context.clearRect(0, 0, canvas.width, canvas.height);
-    var scale = canvas.width / rw; 
-    if (canvas.height / rh < scale) scale = canvas.height / rh;
-    var rectangleOuter = new Rectangle(0, 0, rw, rh);
-    drawRectangle(rectangleOuter, "green", 2, "black");
-    var circleArray = [];
-    if ((cd + cs)< rw && (cd + cs) < rh) {
-      var posX = (cd / 2) + cs;
-      var posY = (cd / 2) + cs;
-      do  {
-        do {
-          var circle = new Circle(posX, posY, cd / 2);
-          circleArray.push(circle);
-          posX = posX + (cd + cs);
-        } while (posX + (cd / 2) + cs <= rw);
-        posX = (cd / 2) + cs;
-        posY = posY + cd + cs;
-      } while (posY + (cd / 2 ) + cs <= rh);
-      $j("#results").html("Maximum number of reels per layer: <b>" + circleArray.length + "</b>");
-    }  
-    for (var i = 0; i < circleArray.length; i++) {
-      drawCircle(circleArray[i], "white", 1, "black");
-    }
-  } else {
-  	;
-  }
-  function drawRectangle(rectangle, color, width, colorStroke){
-     context.beginPath();
-     context.rect(rectangle.x * scale, rectangle.y * scale, rectangle.w * scale, rectangle.h * scale);
-     context.fillStyle = color;
-     context.fill();
-     context.lineWidth = width;
-     context.strokeStyle = colorStroke;
-     context.stroke();   
-  }    
-  
-function drawCircle(circle, color, width, colorStroke){
-      context.beginPath();
-      context.arc(circle.x * scale, circle.y * scale, circle.r * scale, 0, 2 * Math.PI, false);
-      context.fillStyle = color;
-      context.fill();
-      context.lineWidth = width;
-      context.strokeStyle = colorStroke;
-      context.stroke();    
-  }   
-}
-
-function calculateRectangle2(){
-  var rw = $j("#rw").val() * 1;
-  var rh = $j("#rh").val() * 1;
-	var cd = $j("#cd").val() * 1;
-  var cs = $j("#cs").val() * 1;
-  if (rw > 0 && rh > 0 && cd > 0){
-    var canvas = document.getElementById('myCanvas2');
-    var context = canvas.getContext('2d');
-    context.clearRect(0, 0, canvas.width, canvas.height);
-    var scale = canvas.width / rw; 
-    if (canvas.height / rh < scale) scale = canvas.height / rh;
-    var rectangleOuter = new Rectangle(0, 0, rw, rh);
-    drawRectangle(rectangleOuter, "green", 2, "black");
-    var circleArray = [];
-    if ((cd + cs) < rw && (cd + cs) < rh) {
-      var posX = cd / 2 + cs;
-      var posY = cd / 2 + cs;
-      var triangle = 0;
-      do  {
-        do {
-          var circle = new Circle(posX, posY, cd / 2);
-          circleArray.push(circle);
-          posX = posX + (cd + cs);
-        } while (posX + cd /2 + cs <= rw);
-        if (triangle == 0){
-          posX = (cd + 1.5*cs);
-          triangle = 1;
-        } else {
-          posX = cd / 2 + cs;
-          triangle = 0;
-        }
-        posY = posY + Math.pow(Math.pow((cd + cs),2) * 0.75,0.5);        
-      } while (posY + cd / 2 <= rh);
-  
-      $j("#results2").html("Maximum number of reels per layer: <b>" + circleArray.length + "</b>");
-    }  
-    for (var i = 0; i < circleArray.length; i++) {
-       drawCircle(circleArray[i], "white", 1, "black");
-    }
-  }
-  function drawRectangle(rectangle, color, width, colorStroke){
-     context.beginPath();
-     context.rect(rectangle.x * scale, rectangle.y * scale, rectangle.w * scale, rectangle.h * scale);
-     context.fillStyle = color;
-     context.fill();
-     context.lineWidth = width;
-     context.strokeStyle = colorStroke;
-     context.stroke();   
-  } 
-  
-function drawCircle(circle, color, width, colorStroke){
-      context.beginPath();
-      context.arc(circle.x * scale, circle.y * scale, circle.r * scale, 0, 2 * Math.PI, false);
-      context.fillStyle = color;
-      context.fill();
-      context.lineWidth = width;
-      context.strokeStyle = colorStroke;
-      context.stroke();    
-  }   
-}
-
-$j("#circles_image1").hide();
-$j("#circles_image2").hide();
-
-calculateRectangle();
-calculateRectangle2();
-
-</script>
-</div>
-<div class="column" style="background-color:#CBCBCB;">
-<p style="padding-left: 0px; font-size: 14px; font-family: Arial; line-height: .0; ">
-
-<b>Reel Dimensions</b>
-
-</p><p id="results2">Reel Diameter / OD (mm)</p> <div class="center"></div> <div style="position:relative; width:300px; height:300px; margin:auto;">
-
-    <!-- Reel Image -->
-    <img src="./reel.png" id="reelImage" style="width:270px; height:auto; position:absolute; left:25px; top:25px;">
-
-    <!-- Vertical Arrow (Width) -->
-    <div style="position:absolute; left:5px; top:40px; height:260px;">
-        <div style="position:absolute; top:0;">▲</div>
-        <div style="border-left:2px solid black; height:200px; margin-left:7px; position:relative; top:10px;"></div>
-        <div style="position:absolute; bottom:40;">▼</div>
+<div class="calculator-wrapper">
+
+    <header class="page-header">
+        <h1>Reel and Pallet Calculator</h1>
+
+        <p>
+            Calculate reel diameter, reel weight, reel price, pallet weight,
+            pallet height and the maximum number of reels that can fit on each
+            pallet layer.
+        </p>
+
+        <div class="required-key">
+            <span class="required-key-box"></span>
+            Complete the highlighted fields
+        </div>
+    </header>
+
+    <div class="notice">
+        <span class="notice-icon">⚠</span>
+
+        <div>
+            <strong>Please note:</strong>
+            These are theoretical values. Actual manufactured reel measurements
+            and weights may differ because of normal material and production
+            tolerances.
+        </div>
     </div>
 
-    <!-- Width Label -->
-    <div style="position:absolute;
-            background: transparent;
-            border: none;
-            text-align: center;
-            left:30px;
-            top:230px;
-            padding:1px 1px;
-            font-family: Arial;
-            font-weight:bold;
-            transform: rotate(-90deg);
-            transform-origin: left top;">
-            Reel Width:
-<input type="text" id="rlwidth1" size="1" readonly="" tabindex="-1" style="
-           text-align:center;
-           font-size: 16px;
-           border:none;
-           background:transparent;
-           outline:none;
-           pointer-events:none;
-           font-family:Arial;
-           font-weight:bold;
-       ">
-    mm
-</div>
+    <section class="card">
+        <div class="card-header">
+            <div class="step-number">1</div>
 
-    <!-- Horizontal Arrow (Diameter) -->
-    <div style="position:absolute; left:70px; top:280px; width:180px;">
-        <span style="float:left; position:absolute;= top:0;=">◄</span>
-        <div style="border-top:2px solid black; margin:8px 10px;"></div>
-        <span style="position:absolute; right:0; top:0;">►</span>
-    </div>
-
-    <!-- Diameter Label -->
-    <div id="reelod" style="position:absolute;
-        background: transparent;
-        border: none;
-        text-align: center;
-        left:80px;
-        top:260px;
-        font-family: Arial;
-        padding:2px 5px;
-        font-weight:bold;">
-        Reel OD:
-<input style="
-           text-align:center;
-           font-size: 16px;
-           border:none;
-           background:transparent;
-           outline:none;
-           pointer-events:none;
-           font-family:Arial;
-           font-weight:bold;
-       " tabindex="-1" readonly="" size="1" id="cd1" type="text">
-mm
-        
+            <div>
+                <h2>Reel information</h2>
+                <p>
+                    Enter the film specification, reel dimensions, quantity and
+                    selling price.
+                </p>
+            </div>
         </div>
 
+        <div class="input-grid">
+
+            <div class="field-group">
+                <label for="mu">Film thickness</label>
+
+                <div class="input-with-unit">
+                    <input
+                        id="mu"
+                        class="required-input"
+                        type="number"
+                        inputmode="decimal"
+                        min="0"
+                        step="any"
+                        placeholder="e.g. 25"
+                    >
+                    <span class="unit">µm</span>
+                </div>
+            </div>
+
+            <div class="field-group">
+                <label for="meters">Reel length</label>
+
+                <div class="input-with-unit">
+                    <input
+                        id="meters"
+                        class="required-input"
+                        type="number"
+                        inputmode="decimal"
+                        min="0"
+                        step="any"
+                        placeholder="e.g. 5000"
+                    >
+                    <span class="unit">metres</span>
+                </div>
+            </div>
+
+            <div class="field-group">
+                <label for="rlwidth">Reel width</label>
+
+                <div class="input-with-unit">
+                    <input
+                        id="rlwidth"
+                        class="required-input"
+                        type="number"
+                        inputmode="decimal"
+                        min="0"
+                        step="any"
+                        placeholder="e.g. 500"
+                    >
+                    <span class="unit">mm</span>
+                </div>
+            </div>
+
+            <div class="field-group">
+                <label for="reelqty">Number of reels</label>
+
+                <div class="input-with-unit">
+                    <input
+                        id="reelqty"
+                        class="required-input"
+                        type="number"
+                        inputmode="numeric"
+                        min="1"
+                        step="1"
+                        placeholder="e.g. 20"
+                    >
+                    <span class="unit">reels</span>
+                </div>
+            </div>
+
+            <div class="field-group">
+                <label for="density">Film density</label>
+
+                <div class="input-with-unit">
+                    <select id="density">
+                        <option value="0.91" selected>OPP — 0.91</option>
+                        <option value="0.97">OPP White — 0.97</option>
+                        <option value="0.65">OPP Cavitated — 0.65</option>
+                        <option value="0.91">CPP — 0.91</option>
+                        <option value="1.39">PET — 1.39</option>
+                        <option value="0.98">LDPE — 0.98</option>
+                        <option value="1.15">OPA — 1.15</option>
+                        <option value="1.24">PLA — 1.24</option>
+                        <option value="1.05">OPS — 1.05</option>
+                        <option value="1.44">Cellulose — 1.44</option>
+                        <option value="1.00">Paper — 1.00</option>
+                    </select>
+                    <span class="unit">g/cm³</span>
+                </div>
+            </div>
+
+            <div class="field-group">
+                <label for="core_euxx">Core internal diameter</label>
+
+                <div class="input-with-unit">
+                    <input
+                        id="core_euxx"
+                        type="number"
+                        inputmode="decimal"
+                        min="0"
+                        step="any"
+                        value="76"
+                    >
+                    <span class="unit">mm</span>
+                </div>
+            </div>
+
+            <div class="field-group">
+                <label for="thickness_euxx">Core wall thickness</label>
+
+                <div class="input-with-unit">
+                    <input
+                        id="thickness_euxx"
+                        type="number"
+                        inputmode="decimal"
+                        min="0"
+                        step="any"
+                        value="9.6"
+                    >
+                    <span class="unit">mm</span>
+                </div>
+            </div>
+
+            <div class="field-group">
+                <label for="kgprice">Price per kilogram</label>
+
+                <div class="input-with-unit">
+                    <input
+                        id="kgprice"
+                        type="number"
+                        inputmode="decimal"
+                        min="0"
+                        step="0.01"
+                        placeholder="Optional"
+                    >
+                    <span class="unit">£/kg</span>
+                </div>
+            </div>
+
+        </div>
+
+        <hr class="section-divider">
+
+        <h3 class="subheading">Pallet dimensions</h3>
+
+        <div class="input-grid">
+
+            <div class="field-group pallet-type-field">
+                <label for="palletType">Pallet type</label>
+
+                <div class="input-with-unit">
+                    <select id="palletType">
+                        <option value="uk" selected>
+                            UK Pallet (40 × 48) — 1200 × 1000 mm
+                        </option>
+                        <option value="euro">
+                            Euro Pallet — 1200 × 800 mm
+                        </option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="field-group">
+                <label for="height">Maximum pallet height</label>
+
+                <div class="input-with-unit">
+                    <input
+                        id="height"
+                        type="number"
+                        inputmode="decimal"
+                        min="0"
+                        step="any"
+                        value="1500"
+                    >
+                    <span class="unit">mm</span>
+                </div>
+            </div>
+
+            <div class="field-group">
+                <label for="cs">Spacing between reels</label>
+
+                <div class="input-with-unit">
+                    <input
+                        id="cs"
+                        type="number"
+                        inputmode="decimal"
+                        min="0"
+                        step="any"
+                        value="1"
+                    >
+                    <span class="unit">mm</span>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="actions">
+            <button
+                class="button-primary"
+                type="button"
+                onclick="calculateMain()"
+            >
+                Calculate reel and pallet
+            </button>
+
+            <button
+                class="button-secondary"
+                type="button"
+                onclick="resetCalculator()"
+            >
+                Reset calculator
+            </button>
+
+        </div>
+
+        <div
+            id="validationMessage"
+            class="validation-message"
+            role="alert"
+        ></div>
+    </section>
+
+    <section class="card">
+        <div class="card-header">
+            <div class="step-number">2</div>
+
+            <div>
+                <h2>Calculated results</h2>
+                <p>
+                    Results will update after selecting Calculate reel and
+                    pallet.
+                </p>
+            </div>
+        </div>
+
+        <div class="results-grid">
+
+            <div class="result-box">
+                <span class="result-label">Reel diameter / OD</span>
+
+                <div class="result-value-line">
+                    <input
+                        id="cd"
+                        class="result-value"
+                        type="text"
+                        readonly
+                        tabindex="-1"
+                        value="—"
+                    >
+                    <span class="result-unit">mm</span>
+                </div>
+            </div>
+
+            <div class="result-box">
+                <span class="result-label">Reel weight</span>
+
+                <div class="result-value-line">
+                    <input
+                        id="rlweight"
+                        class="result-value"
+                        type="text"
+                        readonly
+                        tabindex="-1"
+                        value="—"
+                    >
+                    <span class="result-unit">kg</span>
+                </div>
+            </div>
+
+            <div class="result-box">
+                <span class="result-label">Reel price</span>
+
+                <div class="result-value-line">
+                    <span class="result-unit">£</span>
+
+                    <input
+                        id="rlprice"
+                        class="result-value"
+                        type="text"
+                        readonly
+                        tabindex="-1"
+                        value="—"
+                    >
+                </div>
+            </div>
+
+            <div class="result-box">
+                <span class="result-label">Total pallet weight</span>
+
+                <div class="result-value-line">
+                    <input
+                        id="palletweight"
+                        class="result-value"
+                        type="text"
+                        readonly
+                        tabindex="-1"
+                        value="—"
+                    >
+                    <span class="result-unit">kg</span>
+                </div>
+            </div>
+
+            <div class="result-box">
+                <span class="result-label">Layers required</span>
+
+                <div class="result-value-line">
+                    <input
+                        id="layersRequired"
+                        class="result-value"
+                        type="text"
+                        readonly
+                        tabindex="-1"
+                        value="—"
+                    >
+                    <span class="result-unit">layers</span>
+                </div>
+            </div>
+
+            <div class="result-box">
+                <span class="result-label">Pallets required</span>
+
+                <div class="result-value-line">
+                    <input
+                        id="palletsRequired"
+                        class="result-value"
+                        type="text"
+                        readonly
+                        tabindex="-1"
+                        value="—"
+                    >
+                    <span class="result-unit">pallets</span>
+                </div>
+            </div>
+
+            <div class="result-box">
+                <span class="result-label">Maximum layers per pallet</span>
+
+                <div class="result-value-line">
+                    <input
+                        id="maxpalht"
+                        class="result-value"
+                        type="text"
+                        readonly
+                        tabindex="-1"
+                        value="—"
+                    >
+                    <span class="result-unit">layers</span>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <section class="card">
+        <div class="card-header">
+            <div class="step-number">3</div>
+
+            <div>
+                <h2>Pallet patterns and reel dimensions</h2>
+                <p>
+                    Compare rectangular and triangular reel arrangements.
+                </p>
+            </div>
+        </div>
+
+        <div class="visual-grid">
+
+            <article class="visual-card">
+                <div class="visual-card-header">
+                    <h3>Rectangular pattern</h3>
+
+                    <p id="results">
+                        Complete the reel information to view the result.
+                    </p>
+                </div>
+
+                <div class="visual-content">
+                    <canvas
+                        id="myCanvas"
+                        width="350"
+                        height="350"
+                    ></canvas>
+                </div>
+            </article>
+
+            <article class="visual-card">
+                <div class="visual-card-header">
+                    <h3>Triangular pattern</h3>
+
+                    <p id="results2">
+                        Complete the reel information to view the result.
+                    </p>
+                </div>
+
+                <div class="visual-content">
+                    <canvas
+                        id="myCanvas2"
+                        width="350"
+                        height="350"
+                    ></canvas>
+                </div>
+            </article>
+
+            <article class="visual-card">
+                <div class="visual-card-header">
+                    <h3>Reel dimensions</h3>
+
+                    <p>Calculated reel width and outside diameter.</p>
+                </div>
+
+                <div class="visual-content">
+
+                    <div class="reel-diagram">
+
+                        <img
+                            src="./reel.png"
+                            id="reelImage"
+                            class="reel-image"
+                            alt="Reel dimension diagram"
+                        >
+
+                        <div class="vertical-measure">
+                            <span class="arrow-up">▲</span>
+                            <span class="arrow-down">▼</span>
+                        </div>
+
+                        <div class="vertical-label">
+                            Reel width:
+                            <input
+                                id="rlwidth1"
+                                class="diagram-value"
+                                type="text"
+                                readonly
+                                tabindex="-1"
+                            >
+                            mm
+                        </div>
+
+                        <div class="horizontal-measure"></div>
+
+                        <div class="diameter-label">
+                            Reel OD:
+                            <input
+                                id="cd1"
+                                class="diagram-value"
+                                type="text"
+                                readonly
+                                tabindex="-1"
+                            >
+                            mm
+                        </div>
+
+                    </div>
+
+                </div>
+            </article>
+
+        </div>
+    </section>
 </div>
 
- 
+<script>
+    "use strict";
 
+    function getNumber(id) {
+        const element = document.getElementById(id);
+        const value = parseFloat(element.value);
 
-</div></div><table cellpadding="2">
+        return Number.isFinite(value) ? value : NaN;
+    }
 
+    function setValue(id, value) {
+        document.getElementById(id).value = value;
+    }
 
+    function showValidation(message) {
+        const box = document.getElementById("validationMessage");
 
+        box.textContent = message;
+        box.classList.add("visible");
+    }
 
-<style>
-* {
-  box-sizing: border-box;
-}
+    function clearValidation() {
+        const box = document.getElementById("validationMessage");
 
-.column {	float: left;	  width: 45;	  padding: 10px;	  height: 385px;	}
+        box.textContent = "";
+        box.classList.remove("visible");
+    }
 
-.row:after {	  content: "";	  display: table;	  clear: both;	}
-</style>
-</table></div></body></html>
+    function validateMainInputs() {
+        const requiredFields = [
+            {
+                id: "mu",
+                name: "film thickness"
+            },
+            {
+                id: "meters",
+                name: "reel length"
+            },
+            {
+                id: "rlwidth",
+                name: "reel width"
+            },
+            {
+                id: "reelqty",
+                name: "number of reels"
+            }
+        ];
+
+        for (const field of requiredFields) {
+            const value = getNumber(field.id);
+
+            if (!Number.isFinite(value) || value <= 0) {
+                showValidation(
+                    "Please enter a valid value for " + field.name + "."
+                );
+
+                document.getElementById(field.id).focus();
+                return false;
+            }
+        }
+
+        const optionalPositiveFields = [
+            "density",
+            "core_euxx",
+            "thickness_euxx",
+            "height"
+        ];
+
+        for (const id of optionalPositiveFields) {
+            const value = getNumber(id);
+
+            if (!Number.isFinite(value) || value <= 0) {
+                showValidation(
+                    "Please check the pallet, material density and core values."
+                );
+
+                document.getElementById(id).focus();
+                return false;
+            }
+        }
+
+        const spacing = getNumber("cs");
+
+        if (!Number.isFinite(spacing) || spacing < 0) {
+            showValidation(
+                "Spacing between reels must be zero or a positive number."
+            );
+
+            document.getElementById("cs").focus();
+            return false;
+        }
+
+        clearValidation();
+        return true;
+    }
+
+    function calculateMain() {
+        if (!validateMainInputs()) {
+            return;
+        }
+
+        calculateReelDiameter();
+        calculateReelWeight();
+        calculateRectangularPattern();
+        const triangularCount = calculateTriangularPattern();
+        calculateRequiredLayersAndPallets(triangularCount);
+        updateReelDiagram();
+    }
+
+    function calculateReelDiameter() {
+        const metres = getNumber("meters");
+        const microns = getNumber("mu");
+        const coreDiameter = getNumber("core_euxx");
+        const coreWall = getNumber("thickness_euxx");
+
+        const metreCaliper = metres * microns;
+        const outsideCoreDiameter = coreDiameter + (coreWall * 2);
+        const outsideCoreSquared = Math.pow(outsideCoreDiameter, 2);
+
+        const reelDiameter =
+            Math.round(
+                Math.sqrt(
+                    (4 * metreCaliper / Math.PI) + outsideCoreSquared
+                )
+            ) + 1;
+
+        setValue("cd", reelDiameter);
+        setValue("cd1", reelDiameter);
+    }
+
+    function calculateReelWeight() {
+        const metres = getNumber("meters");
+        const reelWidth = getNumber("rlwidth");
+        const microns = getNumber("mu");
+        const density = getNumber("density");
+        const kgPrice = getNumber("kgprice");
+        const reelQuantity = getNumber("reelqty");
+        const maximumPalletHeight = getNumber("height");
+
+        const squareMetres = metres * (reelWidth / 1000);
+        const gsm = microns * density;
+        const exactReelWeight = gsm * squareMetres / 1000;
+        const displayedReelWeight = Number(exactReelWeight.toFixed(1));
+
+        const palletWeight = displayedReelWeight * reelQuantity;
+        const maximumLayers = Math.floor(
+            maximumPalletHeight / reelWidth
+        );
+
+        setValue("rlweight", displayedReelWeight.toFixed(1));
+
+        if (Number.isFinite(kgPrice) && kgPrice > 0) {
+            const reelPrice = displayedReelWeight * kgPrice;
+            setValue("rlprice", reelPrice.toFixed(2));
+        } else {
+            setValue("rlprice", "Price Required");
+        }
+
+        setValue("palletweight", palletWeight.toFixed(1));
+        setValue("maxpalht", maximumLayers);
+        setValue("rlwidth1", reelWidth);
+    }
+
+    function calculateRequiredLayersAndPallets(triangularCount) {
+        const reelQuantity = getNumber("reelqty");
+        const maximumLayersPerPallet = getNumber("maxpalht");
+
+        if (
+            !Number.isFinite(triangularCount) ||
+            triangularCount <= 0 ||
+            !Number.isFinite(reelQuantity) ||
+            reelQuantity <= 0
+        ) {
+            setValue("layersRequired", "—");
+            setValue("palletsRequired", "—");
+            return;
+        }
+
+        const layersRequired = Math.ceil(
+            reelQuantity / triangularCount
+        );
+
+        setValue("layersRequired", layersRequired);
+
+        if (
+            !Number.isFinite(maximumLayersPerPallet) ||
+            maximumLayersPerPallet <= 0
+        ) {
+            setValue("palletsRequired", "—");
+            return;
+        }
+
+        const palletsRequired = Math.ceil(
+            layersRequired / maximumLayersPerPallet
+        );
+
+        setValue("palletsRequired", palletsRequired);
+    }
+
+    function calculateLayers(rectangularCount, triangularCount) {
+        const reelQuantity = getNumber("reelqty");
+        const reelWidth = getNumber("rlwidth");
+        const palletWeight = getNumber("palletweight");
+
+        const rectangular = Number.isFinite(rectangularCount)
+            ? rectangularCount
+            : 0;
+
+        const triangular = Number.isFinite(triangularCount)
+            ? triangularCount
+            : 0;
+
+        const reelsPerLayer = Math.max(rectangular, triangular);
+
+        if (!Number.isFinite(reelQuantity) || reelQuantity <= 0) {
+            showValidation(
+                "Please complete the main reel calculation first."
+            );
+            return;
+        }
+
+        if (reelsPerLayer <= 0) {
+            showValidation(
+                "The reels do not fit within the selected pallet dimensions."
+            );
+            return;
+        }
+
+        clearValidation();
+
+        let bestLayoutText;
+
+        if (triangular > rectangular) {
+            bestLayoutText = "Triangular (" + triangular + ")";
+        } else if (rectangular > triangular) {
+            bestLayoutText = "Rectangular (" + rectangular + ")";
+        } else {
+            bestLayoutText = "Either (" + rectangular + ")";
+        }
+
+        setValue("bestLayout", bestLayoutText);
+
+        const totalLayers = Math.ceil(
+            reelQuantity / reelsPerLayer
+        );
+
+        /*
+         * The original calculation adds 200 mm for the pallet.
+         */
+        const totalPalletHeight =
+            (totalLayers * reelWidth) + 200;
+
+        setValue("totnlay", totalLayers);
+        setValue("palhgt", totalPalletHeight);
+
+        const weightCategory = getPalletCategoryFromWeight(
+            palletWeight
+        );
+
+        const heightCategory = getPalletCategoryFromHeight(
+            totalPalletHeight
+        );
+
+        const finalCategory = Math.max(
+            weightCategory,
+            heightCategory
+        );
+
+        setValue(
+            "KIRKTX",
+            getPalletCategoryText(finalCategory)
+        );
+    }
+
+    function getPalletCategoryFromWeight(weight) {
+        if (weight < 250) {
+            return 1;
+        }
+
+        if (weight < 500) {
+            return 2;
+        }
+
+        if (weight <= 1000) {
+            return 3;
+        }
+
+        return 4;
+    }
+
+    function getPalletCategoryFromHeight(height) {
+        if (height < 1000) {
+            return 1;
+        }
+
+        if (height < 1500) {
+            return 2;
+        }
+
+        if (height <= 2000) {
+            return 3;
+        }
+
+        return 4;
+    }
+
+    function getPalletCategoryText(category) {
+        switch (category) {
+            case 1:
+                return "QUARTER PALLET";
+
+            case 2:
+                return "HALF PALLET";
+
+            case 3:
+                return "FULL PALLET";
+
+            default:
+                return "OVER 1 PALLET";
+        }
+    }
+
+    function getPalletDimensions() {
+        const palletType = document.getElementById("palletType").value;
+
+        if (palletType === "euro") {
+            return {
+                width: 1200,
+                length: 800
+            };
+        }
+
+        return {
+            width: 1200,
+            length: 1000
+        };
+    }
+
+    function calculateRectangularPattern() {
+        const palletDimensions = getPalletDimensions();
+        const palletWidth = palletDimensions.width;
+        const palletLength = palletDimensions.length;
+        const reelDiameter = getNumber("cd");
+        const spacing = getNumber("cs");
+
+        const canvas = document.getElementById("myCanvas");
+        const context = canvas.getContext("2d");
+
+        clearCanvas(context, canvas);
+
+        if (
+            palletWidth <= 0 ||
+            palletLength <= 0 ||
+            reelDiameter <= 0
+        ) {
+            return 0;
+        }
+
+        const scale = Math.min(
+            canvas.width / palletWidth,
+            canvas.height / palletLength
+        );
+
+        drawPallet(
+            context,
+            palletWidth,
+            palletLength,
+            scale
+        );
+
+        const reels = [];
+        let positionY = (reelDiameter / 2) + spacing;
+
+        while (
+            positionY + (reelDiameter / 2) + spacing <=
+            palletLength
+        ) {
+            let positionX =
+                (reelDiameter / 2) + spacing;
+
+            while (
+                positionX + (reelDiameter / 2) + spacing <=
+                palletWidth
+            ) {
+                reels.push({
+                    x: positionX,
+                    y: positionY,
+                    radius: reelDiameter / 2
+                });
+
+                positionX += reelDiameter + spacing;
+            }
+
+            positionY += reelDiameter + spacing;
+        }
+
+        reels.forEach(function (reel) {
+            drawReel(context, reel, scale);
+        });
+
+        document.getElementById("results").innerHTML =
+            "Maximum reels per layer: <strong>" +
+            reels.length +
+            "</strong>";
+
+        return reels.length;
+    }
+
+    function calculateTriangularPattern() {
+        const palletDimensions = getPalletDimensions();
+        const palletWidth = palletDimensions.width;
+        const palletLength = palletDimensions.length;
+        const reelDiameter = getNumber("cd");
+        const spacing = getNumber("cs");
+
+        const canvas = document.getElementById("myCanvas2");
+        const context = canvas.getContext("2d");
+
+        clearCanvas(context, canvas);
+
+        if (
+            palletWidth <= 0 ||
+            palletLength <= 0 ||
+            reelDiameter <= 0
+        ) {
+            return 0;
+        }
+
+        const scale = Math.min(
+            canvas.width / palletWidth,
+            canvas.height / palletLength
+        );
+
+        drawPallet(
+            context,
+            palletWidth,
+            palletLength,
+            scale
+        );
+
+        const reels = [];
+        const centreDistance = reelDiameter + spacing;
+        const rowSpacing = centreDistance * Math.sqrt(3) / 2;
+
+        let rowNumber = 0;
+        let positionY = (reelDiameter / 2) + spacing;
+
+        while (
+            positionY + (reelDiameter / 2) <=
+            palletLength
+        ) {
+            let positionX =
+                (reelDiameter / 2) +
+                spacing +
+                (
+                    rowNumber % 2 === 1
+                        ? centreDistance / 2
+                        : 0
+                );
+
+            while (
+                positionX + (reelDiameter / 2) + spacing <=
+                palletWidth
+            ) {
+                reels.push({
+                    x: positionX,
+                    y: positionY,
+                    radius: reelDiameter / 2
+                });
+
+                positionX += centreDistance;
+            }
+
+            positionY += rowSpacing;
+            rowNumber++;
+        }
+
+        reels.forEach(function (reel) {
+            drawReel(context, reel, scale);
+        });
+
+        document.getElementById("results2").innerHTML =
+            "Maximum reels per layer: <strong>" +
+            reels.length +
+            "</strong>";
+
+        return reels.length;
+    }
+
+    function clearCanvas(context, canvas) {
+        context.clearRect(
+            0,
+            0,
+            canvas.width,
+            canvas.height
+        );
+
+        context.fillStyle = "#f7fafb";
+        context.fillRect(
+            0,
+            0,
+            canvas.width,
+            canvas.height
+        );
+    }
+
+    function drawPallet(
+        context,
+        width,
+        height,
+        scale
+    ) {
+        context.beginPath();
+
+        context.rect(
+            0,
+            0,
+            width * scale,
+            height * scale
+        );
+
+        context.fillStyle = "#dceadf";
+        context.fill();
+
+        context.lineWidth = 2;
+        context.strokeStyle = "#315b43";
+        context.stroke();
+    }
+
+    function drawReel(context, reel, scale) {
+        context.beginPath();
+
+        context.arc(
+            reel.x * scale,
+            reel.y * scale,
+            reel.radius * scale,
+            0,
+            Math.PI * 2
+        );
+
+        context.fillStyle = "#ffffff";
+        context.fill();
+
+        context.lineWidth = 1;
+        context.strokeStyle = "#263640";
+        context.stroke();
+    }
+
+    function updateReelDiagram() {
+        setValue("rlwidth1", getNumber("rlwidth"));
+        setValue("cd1", getNumber("cd"));
+    }
+
+    function resetCalculator() {
+        const requiredIds = [
+            "mu",
+            "meters",
+            "rlwidth",
+            "reelqty",
+            "kgprice"
+        ];
+
+        requiredIds.forEach(function (id) {
+            setValue(id, "");
+        });
+
+        setValue("density", "0.91");
+        setValue("core_euxx", "76");
+        setValue("thickness_euxx", "9.6");
+        document.getElementById("palletType").value = "uk";
+        setValue("height", "1500");
+        setValue("cs", "1");
+
+        const resultIds = [
+            "cd",
+            "rlweight",
+            "rlprice",
+            "palletweight",
+            "layersRequired",
+            "palletsRequired",
+            "maxpalht"
+        ];
+
+        resultIds.forEach(function (id) {
+            setValue(id, "—");
+        });
+
+        setValue("rlwidth1", "");
+        setValue("cd1", "");
+
+        document.getElementById("results").textContent =
+            "Complete the reel information to view the result.";
+
+        document.getElementById("results2").textContent =
+            "Complete the reel information to view the result.";
+
+        const firstCanvas = document.getElementById("myCanvas");
+        const secondCanvas = document.getElementById("myCanvas2");
+
+        clearCanvas(
+            firstCanvas.getContext("2d"),
+            firstCanvas
+        );
+
+        clearCanvas(
+            secondCanvas.getContext("2d"),
+            secondCanvas
+        );
+
+        clearValidation();
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+    }
+
+    function initialiseCanvases() {
+        const firstCanvas = document.getElementById("myCanvas");
+        const secondCanvas = document.getElementById("myCanvas2");
+
+        clearCanvas(
+            firstCanvas.getContext("2d"),
+            firstCanvas
+        );
+
+        clearCanvas(
+            secondCanvas.getContext("2d"),
+            secondCanvas
+        );
+    }
+
+    initialiseCanvases();
+</script>
+
+</body>
+</html>
