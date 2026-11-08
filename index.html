@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -165,6 +165,12 @@
             gap: 18px;
         }
 
+        .laminate-only[hidden] { display: none !important; }
+
+        /* Each laminate layer starts on its own row. */
+        #materialGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 800px; }
+        @media (max-width: 540px) { #materialGrid { grid-template-columns: 1fr; } }
+
         .field-group {
             min-width: 0;
         }
@@ -241,6 +247,22 @@
         .input-with-unit input,
         .input-with-unit select {
             border-radius: 8px 0 0 8px;
+        }
+
+        .currency-prefix {
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            border: 1px solid #bacad3;
+            border-right: 0;
+            border-radius: 8px 0 0 8px;
+            background: #edf2f5;
+            color: var(--text);
+            font-size: 15px;
+        }
+
+        .input-with-unit .currency-prefix + input {
+            border-radius: 0;
         }
 
         .field-help {
@@ -627,7 +649,7 @@
 
         .footer-note {
             padding: 6px 10px 20px;
-            color: #d1d1d1;
+            color: #637581;
             text-align: center;
             font-size: 11px;
         }
@@ -740,6 +762,24 @@
                 break-inside: avoid;
             }
         }
+
+        /* Keep all six reel-information fields together on desktop. */
+        .reel-information-grid {
+            grid-template-columns: repeat(6, minmax(0, 1fr));
+            gap: 12px;
+        }
+        .reel-information-grid .field-group label { font-size: 12px; }
+        .reel-information-grid input { padding-left: 9px; padding-right: 7px; }
+        .reel-information-grid .unit { min-width: 0; padding: 0 7px; font-size: 11px; }
+        @media (max-width: 1100px) {
+            .reel-information-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        }
+        @media (max-width: 650px) {
+            .reel-information-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+        @media (max-width: 420px) {
+            .reel-information-grid { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 
@@ -748,7 +788,13 @@
 <div class="calculator-wrapper">
 
     <header class="page-header">
-        <h1>Multiplastics Reel &amp; Pallet Calculator</h1>
+        <h1>Reel and Pallet Calculator</h1>
+
+        <p>
+            Calculate reel diameter, reel weight, reel price, pallet weight,
+            pallet height and the maximum number of reels that can fit on each
+            pallet layer.
+        </p>
 
         <div class="required-key">
             <span class="required-key-box"></span>
@@ -768,8 +814,70 @@
     </div>
 
     <section class="card">
+        <div class="card-header"><div class="step-number">1</div><div>
+            <h2>Select film type</h2><p>Choose a single film or a two-layer laminate.</p>
+        </div></div>
+        <div class="field-group" style="max-width:390px">
+            <label for="filmType">Film type</label>
+            <select id="filmType" onchange="updateFilmType()">
+                <option value="single" selected>Single Film</option>
+                <option value="laminate">Laminate Film</option>
+            </select>
+        </div>
+    </section>
+    <section class="card">
+        <div class="card-header"><div class="step-number">2</div><div>
+            <h2>Select material</h2><p>Choose the material and thickness for each film layer.</p>
+        </div></div>
+        <div class="input-grid" id="materialGrid">
+            <div class="field-group">
+                <label for="density" id="layer1Label">Material / density</label>
+                <div class="input-with-unit">
+                    <select id="density">
+                        <option value="0.91" selected>OPP — 0.91</option>
+                        <option value="0.97">OPP White — 0.97</option>
+                        <option value="0.65">OPP Cavitated — 0.65</option>
+                        <option value="0.91">CPP — 0.91</option>
+                        <option value="1.39">PET — 1.39</option>
+                        <option value="0.98">LDPE — 0.98</option>
+                        <option value="1.15">OPA — 1.15</option>
+                        <option value="1.24">PLA — 1.24</option>
+                        <option value="1.05">OPS — 1.05</option>
+                        <option value="1.44">Cellulose — 1.44</option>
+                        <option value="1.00">Paper — 1.00</option>
+                    </select><span class="unit">g/cm³</span>
+                </div>
+            </div>
+            <div class="field-group">
+                <label for="mu" id="layer1ThicknessLabel">Film thickness</label>
+                <div class="input-with-unit"><input id="mu" class="required-input" type="number" inputmode="decimal" min="0" step="any" placeholder="e.g. 25"><span class="unit">µm</span></div>
+            </div>
+            <div class="field-group laminate-only" hidden>
+                <label for="density2">Layer 2 material / density</label>
+                <div class="input-with-unit"><select id="density2">
+                    <option value="0.91">OPP — 0.91</option>
+                    <option value="0.97">OPP White — 0.97</option>
+                    <option value="0.65">OPP Cavitated — 0.65</option>
+                    <option value="0.91">CPP — 0.91</option>
+                    <option value="1.39">PET — 1.39</option>
+                    <option value="0.98" selected>LDPE — 0.98</option>
+                    <option value="1.15">OPA — 1.15</option>
+                    <option value="1.24">PLA — 1.24</option>
+                    <option value="1.05">OPS — 1.05</option>
+                    <option value="1.44">Cellulose — 1.44</option>
+                    <option value="1.00">Paper — 1.00</option>
+                </select><span class="unit">g/cm³</span></div>
+            </div>
+            <div class="field-group laminate-only" hidden>
+                <label for="mu2">Layer 2 thickness</label>
+                <div class="input-with-unit"><input id="mu2" class="required-input" type="number" inputmode="decimal" min="0" step="any" placeholder="e.g. 30"><span class="unit">µm</span></div>
+            </div>
+        </div>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:0">Laminate calculations use the combined thickness and the sum of each layer's grammage. Adhesive, ink and coatings are excluded.</p>
+    </section>
+    <section class="card">
         <div class="card-header">
-            <div class="step-number">1</div>
+            <div class="step-number">5</div>
 
             <div>
                 <h2>Reel information</h2>
@@ -780,24 +888,9 @@
             </div>
         </div>
 
-        <div class="input-grid">
+        <div class="input-grid reel-information-grid">
 
-            <div class="field-group">
-                <label for="mu">Film thickness</label>
 
-                <div class="input-with-unit">
-                    <input
-                        id="mu"
-                        class="required-input"
-                        type="number"
-                        inputmode="decimal"
-                        min="0"
-                        step="any"
-                        placeholder="e.g. 25"
-                    >
-                    <span class="unit">µm</span>
-                </div>
-            </div>
 
             <div class="field-group">
                 <label for="meters">Reel length</label>
@@ -850,26 +943,7 @@
                 </div>
             </div>
 
-            <div class="field-group">
-                <label for="density">Film density</label>
 
-                <div class="input-with-unit">
-                    <select id="density">
-                        <option value="0.91" selected>OPP — 0.91</option>
-                        <option value="0.97">OPP White — 0.97</option>
-                        <option value="0.65">OPP Cavitated — 0.65</option>
-                        <option value="0.91">CPP — 0.91</option>
-                        <option value="1.39">PET — 1.39</option>
-                        <option value="0.98">LDPE — 0.98</option>
-                        <option value="1.15">OPA — 1.15</option>
-                        <option value="1.24">PLA — 1.24</option>
-                        <option value="1.05">OPS — 1.05</option>
-                        <option value="1.44">Cellulose — 1.44</option>
-                        <option value="1.00">Paper — 1.00</option>
-                    </select>
-                    <span class="unit">g/cm³</span>
-                </div>
-            </div>
 
             <div class="field-group">
                 <label for="core_euxx">Core internal diameter</label>
@@ -907,13 +981,15 @@
                 <label for="kgprice">Price per kilogram</label>
 
                 <div class="input-with-unit">
+                    <span class="currency-prefix">£</span>
                     <input
                         id="kgprice"
                         type="number"
                         inputmode="decimal"
                         min="0"
                         step="0.01"
-                        placeholder="Optional"
+                        placeholder="0.00"
+                        onblur="formatKilogramPrice()"
                     >
                     <span class="unit">£/kg</span>
                 </div>
@@ -958,7 +1034,7 @@
                 </div>
             </div>
 
-            <div class="field-group">
+            <div class="field-group" style="display: none;">
                 <label for="cs">Spacing between reels</label>
 
                 <div class="input-with-unit">
@@ -985,22 +1061,6 @@
                 Calculate reel and pallet
             </button>
 
-            <button
-                class="button-secondary"
-                type="button"
-                onclick="resetCalculator()"
-            >
-                Reset calculator
-            </button>
-
-            <button
-                class="button-outline"
-                type="button"
-                onclick="exportCalculationPDF()"
-            >
-                Export PDF
-            </button>
-
         </div>
 
         <div
@@ -1012,7 +1072,7 @@
 
     <section class="card">
         <div class="card-header">
-            <div class="step-number">2</div>
+            <div class="step-number">4</div>
 
             <div>
                 <h2>Calculated results</h2>
@@ -1247,10 +1307,14 @@
 
         </div>
     </section>
+    <section class="card" aria-label="Calculator actions">
+        <div class="actions" style="margin-top:0; justify-content:flex-end;">
+            <button class="button-secondary" type="button" onclick="resetCalculator()">Reset calculator</button>
+            <button class="button-secondary" type="button" onclick="exportReelPDF()">Export PDF</button>
+        </div>
+        <div id="pdfMessage" role="status" style="font-size:13px;color:#637581;margin-top:10px;text-align:right" aria-live="polite"></div>
+    </section>
 </div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <script>
     "use strict";
@@ -1333,6 +1397,16 @@
             }
         }
 
+        if (document.getElementById("filmType").value === "laminate") {
+            for (const id of ["mu2", "density2"]) {
+                const value = getNumber(id);
+                if (!Number.isFinite(value) || value <= 0) {
+                    showValidation("Please enter a valid Layer 2 material thickness and density.");
+                    document.getElementById(id).focus();
+                    return false;
+                }
+            }
+        }
         const spacing = getNumber("cs");
 
         if (!Number.isFinite(spacing) || spacing < 0) {
@@ -1348,7 +1422,33 @@
         return true;
     }
 
+    function formatKilogramPrice() {
+        const field = document.getElementById("kgprice");
+        if (field.value.trim() === "") return;
+        const amount = Number(field.value);
+        if (Number.isFinite(amount) && amount >= 0) {
+            field.value = amount.toFixed(2);
+        }
+    }
+
+    function updateFilmType() {
+        const laminated = document.getElementById("filmType").value === "laminate";
+        document.querySelectorAll(".laminate-only").forEach(el => { el.hidden = !laminated; });
+        document.getElementById("layer1Label").textContent = laminated ? "Layer 1 material / density" : "Material / density";
+        document.getElementById("layer1ThicknessLabel").textContent = laminated ? "Layer 1 thickness" : "Film thickness";
+    }
+
+    function getTotalThickness() {
+        return getNumber("mu") + (document.getElementById("filmType").value === "laminate" ? getNumber("mu2") : 0);
+    }
+
+    function getCombinedGsm() {
+        const first = getNumber("mu") * getNumber("density");
+        return first + (document.getElementById("filmType").value === "laminate" ? getNumber("mu2") * getNumber("density2") : 0);
+    }
+
     function calculateMain() {
+        formatKilogramPrice();
         if (!validateMainInputs()) {
             return;
         }
@@ -1363,7 +1463,7 @@
 
     function calculateReelDiameter() {
         const metres = getNumber("meters");
-        const microns = getNumber("mu");
+        const microns = getTotalThickness();
         const coreDiameter = getNumber("core_euxx");
         const coreWall = getNumber("thickness_euxx");
 
@@ -1385,14 +1485,12 @@
     function calculateReelWeight() {
         const metres = getNumber("meters");
         const reelWidth = getNumber("rlwidth");
-        const microns = getNumber("mu");
-        const density = getNumber("density");
+        const gsm = getCombinedGsm();
         const kgPrice = getNumber("kgprice");
         const reelQuantity = getNumber("reelqty");
         const maximumPalletHeight = getNumber("height");
 
         const squareMetres = metres * (reelWidth / 1000);
-        const gsm = microns * density;
         const exactReelWeight = gsm * squareMetres / 1000;
         const displayedReelWeight = Number(exactReelWeight.toFixed(1));
 
@@ -1818,6 +1916,10 @@
             setValue(id, "");
         });
 
+        document.getElementById("filmType").value = "single";
+        setValue("mu2", "");
+        document.getElementById("density2").selectedIndex = 5;
+        updateFilmType();
         setValue("density", "0.91");
         setValue("core_euxx", "76");
         setValue("thickness_euxx", "9.6");
@@ -1868,310 +1970,6 @@
         });
     }
 
-
-    function getSelectedMaterialName() {
-        const densitySelect = document.getElementById("density");
-        const selectedText = densitySelect.options[densitySelect.selectedIndex].text;
-        return selectedText.split("—")[0].trim();
-    }
-
-    function formatPdfDate(date) {
-        return date.toLocaleDateString("en-GB", {
-            day: "2-digit",
-            month: "long",
-            year: "numeric"
-        });
-    }
-
-    function formatPdfTime(date) {
-        return date.toLocaleTimeString("en-GB", {
-            hour: "2-digit",
-            minute: "2-digit"
-        });
-    }
-
-    function escapeHtml(value) {
-        return String(value)
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;");
-    }
-
-    function createPdfRow(label, value) {
-        return (
-            '<div style="display:flex;border-bottom:1px solid #d9e5dd;">' +
-                '<div style="width:58%;padding:7px 9px;font-weight:700;color:#34443a;">' +
-                    escapeHtml(label) +
-                '</div>' +
-                '<div style="width:42%;padding:7px 9px;text-align:right;color:#18271d;">' +
-                    escapeHtml(value) +
-                '</div>' +
-            '</div>'
-        );
-    }
-
-    function buildPdfReport() {
-        const now = new Date();
-        const densitySelect = document.getElementById("density");
-        const palletSelect = document.getElementById("palletType");
-        const rectangularCanvas = document.getElementById("myCanvas");
-        const triangularCanvas = document.getElementById("myCanvas2");
-
-        const priceValue = document.getElementById("rlprice").value;
-        const pricePerKg = document.getElementById("kgprice").value.trim();
-
-        const report = document.createElement("div");
-        report.style.position = "fixed";
-        report.style.left = "-10000px";
-        report.style.top = "0";
-        report.style.width = "794px";
-        report.style.padding = "38px";
-        report.style.background = "#ffffff";
-        report.style.color = "#24323c";
-        report.style.fontFamily = "Arial, Helvetica, sans-serif";
-        report.style.fontSize = "13px";
-        report.style.lineHeight = "1.4";
-
-        const reelRows = [
-            ["Film thickness", document.getElementById("mu").value + " µm"],
-            ["Reel length", document.getElementById("meters").value + " m"],
-            ["Reel width", document.getElementById("rlwidth").value + " mm"],
-            ["Material", getSelectedMaterialName()],
-            ["Density", densitySelect.value + " g/cm³"],
-            ["Number of reels", document.getElementById("reelqty").value],
-            ["Price per kilogram", pricePerKg ? "£" + Number(pricePerKg).toFixed(2) + "/kg" : "Not entered"]
-        ];
-
-        const palletRows = [
-            ["Pallet type", palletSelect.options[palletSelect.selectedIndex].text.trim()],
-            ["Maximum pallet height", document.getElementById("height").value + " mm"],
-            ["Spacing between reels", document.getElementById("cs").value + " mm"]
-        ];
-
-        const resultRows = [
-            ["Reel diameter / OD", document.getElementById("cd").value + " mm"],
-            ["Reel weight", document.getElementById("rlweight").value + " kg"],
-            ["Reel price", priceValue === "Price Required" ? priceValue : "£" + priceValue],
-            ["Total pallet weight", document.getElementById("palletweight").value + " kg"],
-            ["Layers required", document.getElementById("layersRequired").value],
-            ["Pallets required", document.getElementById("palletsRequired").value],
-            ["Maximum layers per pallet", document.getElementById("maxpalht").value]
-        ];
-
-        const reelRowsHtml = reelRows.map(row => createPdfRow(row[0], row[1])).join("");
-        const palletRowsHtml = palletRows.map(row => createPdfRow(row[0], row[1])).join("");
-        const resultRowsHtml = resultRows.map(row => createPdfRow(row[0], row[1])).join("");
-
-        report.innerHTML = `
-            <div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:5px solid #146E34;padding-bottom:18px;margin-bottom:22px;">
-                <div style="width:390px;">
-                    <img
-                        src="https://static.wixstatic.com/media/ea8520_cb4205dee03e4b148d39ca0fef202a80~mv2.jpg/v1/fill/w_387,h_81,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/banner_newls_edited.jpg"
-                        crossorigin="anonymous"
-                        style="display:block;width:387px;height:81px;object-fit:contain;"
-                        alt="Multiplastics logo"
-                    >
-                </div>
-                <div style="text-align:right;font-size:11px;color:#42554a;">
-                    <strong style="font-size:13px;color:#146E34;">Multiplastics (Europe) Limited</strong><br>
-                    Columbus House, 30 Manchester Road<br>
-                    Northwich, Cheshire, CW9 5ND<br><br>
-                    sales@multiplastics.co.uk<br>
-                    Tel: 01606 330011<br>
-                    www.multiplastics.co.uk
-                </div>
-            </div>
-
-            <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:22px;">
-                <div>
-                    <h1 style="margin:0;color:#146E34;font-size:27px;line-height:1.1;">Reel &amp; Pallet Calculation Report</h1>
-                    <p style="margin:6px 0 0;color:#68786e;">Generated by the Multiplastics Reel and Pallet Calculator</p>
-                </div>
-                <div style="text-align:right;color:#68786e;font-size:11px;">
-                    ${escapeHtml(formatPdfDate(now))}<br>
-                    ${escapeHtml(formatPdfTime(now))}
-                </div>
-            </div>
-
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:20px;">
-                <section style="border:1px solid #cbdacf;border-radius:8px;overflow:hidden;">
-                    <h2 style="margin:0;padding:10px 12px;background:#146E34;color:white;font-size:16px;">Reel information</h2>
-                    ${reelRowsHtml}
-                </section>
-                <section style="border:1px solid #cbdacf;border-radius:8px;overflow:hidden;">
-                    <h2 style="margin:0;padding:10px 12px;background:#146E34;color:white;font-size:16px;">Pallet information</h2>
-                    ${palletRowsHtml}
-                </section>
-            </div>
-
-            <section style="border:1px solid #cbdacf;border-radius:8px;overflow:hidden;margin-bottom:22px;">
-                <h2 style="margin:0;padding:10px 12px;background:#146E34;color:white;font-size:16px;">Calculated results</h2>
-                <div style="display:grid;grid-template-columns:1fr 1fr;">
-                    ${resultRowsHtml}
-                </div>
-            </section>
-
-            <div style="page-break-before:always;padding-top:4px;">
-                <h2 style="margin:0 0 14px;color:#146E34;font-size:21px;border-bottom:3px solid #146E34;padding-bottom:7px;">Pallet layouts</h2>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;">
-                    <section style="border:1px solid #cbdacf;border-radius:8px;padding:12px;text-align:center;">
-                        <h3 style="margin:0 0 4px;color:#146E34;font-size:16px;">Rectangular pattern</h3>
-                        <p style="margin:0 0 8px;color:#65756b;">${document.getElementById("results").innerHTML}</p>
-                        <img src="${rectangularCanvas.toDataURL("image/png")}" style="width:100%;max-width:315px;height:auto;" alt="Rectangular pallet pattern">
-                    </section>
-                    <section style="border:1px solid #cbdacf;border-radius:8px;padding:12px;text-align:center;">
-                        <h3 style="margin:0 0 4px;color:#146E34;font-size:16px;">Triangular pattern</h3>
-                        <p style="margin:0 0 8px;color:#65756b;">${document.getElementById("results2").innerHTML}</p>
-                        <img src="${triangularCanvas.toDataURL("image/png")}" style="width:100%;max-width:315px;height:auto;" alt="Triangular pallet pattern">
-                    </section>
-                </div>
-
-                <section style="margin-top:20px;border:1px solid #cbdacf;border-radius:8px;padding:16px;">
-                    <h3 style="margin:0 0 12px;color:#146E34;font-size:16px;">Reel dimensions</h3>
-                    <div style="display:flex;justify-content:center;gap:50px;padding:12px;background:#f2f8f4;border-radius:7px;">
-                        <div style="text-align:center;">
-                            <div style="font-size:11px;color:#65756b;text-transform:uppercase;font-weight:700;">Reel width</div>
-                            <div style="font-size:25px;font-weight:700;color:#146E34;">${escapeHtml(document.getElementById("rlwidth").value)} mm</div>
-                        </div>
-                        <div style="text-align:center;">
-                            <div style="font-size:11px;color:#65756b;text-transform:uppercase;font-weight:700;">Reel outside diameter</div>
-                            <div style="font-size:25px;font-weight:700;color:#146E34;">${escapeHtml(document.getElementById("cd").value)} mm</div>
-                        </div>
-                    </div>
-                </section>
-            </div>
-
-            <div style="margin-top:24px;padding-top:10px;border-top:1px solid #bfcfc4;text-align:center;color:#68786e;font-size:10px;">
-                Multiplastics (Europe) Limited &nbsp;•&nbsp; Reel &amp; Pallet Calculator &nbsp;•&nbsp; www.multiplastics.co.uk
-            </div>
-        `;
-
-        document.body.appendChild(report);
-        return report;
-    }
-
-    async function exportCalculationPDF() {
-        if (!validateMainInputs()) {
-            return;
-        }
-
-        if (document.getElementById("cd").value === "—") {
-            calculateMain();
-        }
-
-        if (!window.html2canvas || !window.jspdf) {
-            showValidation(
-                "The PDF export library could not be loaded. Please check your internet connection and try again."
-            );
-            return;
-        }
-
-        clearValidation();
-        const report = buildPdfReport();
-
-        try {
-            const images = Array.from(report.querySelectorAll("img"));
-            await Promise.all(images.map(function (image) {
-                if (image.complete) {
-                    return Promise.resolve();
-                }
-
-                return new Promise(function (resolve) {
-                    image.onload = resolve;
-                    image.onerror = resolve;
-                });
-            }));
-
-            const canvas = await html2canvas(report, {
-                scale: 2,
-                useCORS: true,
-                allowTaint: false,
-                backgroundColor: "#ffffff",
-                logging: false
-            });
-
-            const imageData = canvas.toDataURL("image/jpeg", 0.96);
-            const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF({
-                orientation: "portrait",
-                unit: "mm",
-                format: "a4",
-                compress: true
-            });
-
-            const pageWidth = pdf.internal.pageSize.getWidth();
-            const pageHeight = pdf.internal.pageSize.getHeight();
-            const margin = 8;
-            const usableWidth = pageWidth - (margin * 2);
-            const renderedHeight = canvas.height * usableWidth / canvas.width;
-
-            let heightRemaining = renderedHeight;
-            let position = margin;
-
-            pdf.addImage(
-                imageData,
-                "JPEG",
-                margin,
-                position,
-                usableWidth,
-                renderedHeight,
-                undefined,
-                "FAST"
-            );
-
-            heightRemaining -= pageHeight - (margin * 2);
-
-            while (heightRemaining > 0) {
-                position = heightRemaining - renderedHeight + margin;
-                pdf.addPage();
-                pdf.addImage(
-                    imageData,
-                    "JPEG",
-                    margin,
-                    position,
-                    usableWidth,
-                    renderedHeight,
-                    undefined,
-                    "FAST"
-                );
-                heightRemaining -= pageHeight - (margin * 2);
-            }
-
-            const pageCount = pdf.getNumberOfPages();
-            for (let page = 1; page <= pageCount; page++) {
-                pdf.setPage(page);
-                pdf.setFontSize(8);
-                pdf.setTextColor(90, 105, 96);
-                pdf.text(
-                    "Page " + page + " of " + pageCount,
-                    pageWidth - margin,
-                    pageHeight - 4,
-                    { align: "right" }
-                );
-            }
-
-            const reelWidth = document.getElementById("rlwidth").value;
-            const reelLength = document.getElementById("meters").value;
-            const material = getSelectedMaterialName();
-            const filename =
-                "Multiplastics Reel Calculation - " +
-                reelWidth + "mm x " +
-                reelLength + "m - " +
-                material + ".pdf";
-
-            pdf.save(filename);
-        } catch (error) {
-            console.error(error);
-            showValidation(
-                "The PDF could not be created. Please try again after the page and logo have fully loaded."
-            );
-        } finally {
-            report.remove();
-        }
-    }
-
     function initialiseCanvases() {
         const firstCanvas = document.getElementById("myCanvas");
         const secondCanvas = document.getElementById("myCanvas2");
@@ -2185,6 +1983,105 @@
             secondCanvas.getContext("2d"),
             secondCanvas
         );
+    }
+
+
+    async function loadReelPdfLibrary() {
+        if (window.jspdf && window.jspdf.jsPDF) return window.jspdf.jsPDF;
+        const sources = [
+            "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js",
+            "https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js",
+            "https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js"
+        ];
+        for (const url of sources) {
+            try {
+                await new Promise((resolve, reject) => {
+                    const script = document.createElement("script");
+                    script.src = url;
+                    script.onload = resolve;
+                    script.onerror = reject;
+                    document.head.appendChild(script);
+                });
+                if (window.jspdf && window.jspdf.jsPDF) return window.jspdf.jsPDF;
+            } catch (_) { /* try the next provider */ }
+        }
+        throw new Error("The PDF library could not load. Check your internet connection and try again.");
+    }
+
+    async function exportReelPDF() {
+        const message = document.getElementById("pdfMessage");
+        message.textContent = "Preparing PDF…";
+        try {
+            const JsPDF = await loadReelPdfLibrary();
+            const pdf = new JsPDF({ unit: "mm", format: "a4" });
+            const w = 210, margin = 17;
+            let y = 20;
+            pdf.setFillColor(20, 110, 52);
+            pdf.rect(0, 0, w, 35, "F");
+            pdf.setTextColor(255, 255, 255);
+            pdf.setFont("helvetica", "bold");
+            pdf.setFontSize(18);
+            pdf.text("MULTIPLASTICS", margin, 17);
+            pdf.setFontSize(11);
+            pdf.text("Reel & Pallet Calculation", margin, 26);
+            pdf.setTextColor(36, 50, 60);
+            y = 45;
+            pdf.setFontSize(9);
+            pdf.setFont("helvetica", "normal");
+            pdf.text("Report date: " + new Date().toLocaleDateString("en-GB"), margin, y);
+            const val = id => { const el = document.getElementById(id); return el ? (el.value || "—") : "—"; };
+            const selected = id => { const el = document.getElementById(id); return el ? el.options[el.selectedIndex].text : "—"; };
+            function heading(label) {
+                y += 10;
+                pdf.setFont("helvetica", "bold"); pdf.setFontSize(11);
+                pdf.setTextColor(15, 90, 42); pdf.text(label, margin, y);
+                y += 3;
+                pdf.setDrawColor(210, 224, 230); pdf.line(margin, y, w - margin, y);
+                y += 7;
+            }
+            function line(label, value) {
+                if (y > 272) { pdf.addPage(); y = 20; }
+                pdf.setFont("helvetica", "normal"); pdf.setFontSize(9);
+                pdf.setTextColor(75, 91, 100); pdf.text(label, margin, y);
+                pdf.setFont("helvetica", "bold"); pdf.setTextColor(36, 50, 60);
+                pdf.text(String(value), 102, y);
+                y += 7;
+            }
+            heading("Film specification");
+                        line("Film type", selected("filmType"));
+            line("Layer 1", selected("density") + " / " + val("mu") + " microns");
+            const layer2 = document.getElementById("mu2");
+            if (layer2 && layer2.offsetParent !== null) {
+                const density2 = document.getElementById("density2");
+                line("Layer 2", (density2 ? selected("density2") : "Laminate layer") + " / " + layer2.value + " microns");
+            }
+            heading("Reel information");
+            line("Reel length", val("meters") + " metres");
+            line("Reel width", val("rlwidth") + " mm");
+            line("Number of reels", val("reelqty"));
+            line("Core internal diameter", val("core_euxx") + " mm");
+            line("Core wall thickness", val("thickness_euxx") + " mm");
+            line("Price per kilogram", val("kgprice") ? "GBP " + val("kgprice") + " / kg" : "Not entered");
+            heading("Pallet information");
+            line("Pallet type", selected("palletType"));
+            line("Maximum pallet height", val("height") + " mm");
+            heading("Calculated results");
+            for (const [label, id, unit] of [
+                ["Reel outside diameter", "cd", "mm"], ["Reel weight", "rlweight", "kg"],
+                ["Reel price", "rlprice", "GBP"], ["Total film weight", "palletweight", "kg"],
+                ["Layers required", "layersRequired", ""], ["Pallets required", "palletsRequired", ""],
+                ["Maximum layers per pallet", "maxpalht", ""]
+            ]) line(label, (unit === "GBP" ? "GBP " : "") + val(id) + (unit && unit !== "GBP" ? " " + unit : ""));
+            y += 6;
+            pdf.setFont("helvetica", "normal"); pdf.setFontSize(8); pdf.setTextColor(100, 115, 125);
+            const note = pdf.splitTextToSize("Theoretical values only. Actual reel dimensions and weights may vary due to material and production tolerances.", w - 2 * margin);
+            if (y + note.length * 4 > 285) { pdf.addPage(); y = 20; }
+            pdf.text(note, margin, y);
+            pdf.save("Multiplastics_Reel_Pallet_Calculation.pdf");
+            message.textContent = "";
+        } catch (error) {
+            message.textContent = error.message || "Unable to export PDF.";
+        }
     }
 
     initialiseCanvases();
