@@ -780,6 +780,27 @@
         @media (max-width: 420px) {
             .reel-information-grid { grid-template-columns: 1fr; }
         }
+
+        /* Pallet selection, height and calculate button on a single desktop row. */
+        .pallet-dimensions-grid {
+            grid-template-columns: minmax(290px, 390px) minmax(180px, 260px) max-content;
+            align-items: end;
+            gap: 16px;
+        }
+        .pallet-dimensions-grid .pallet-type-field {
+            grid-column: auto;
+            max-width: none;
+        }
+        .pallet-calculate-action { display: flex; align-items: end; }
+        .pallet-calculate-action button { white-space: nowrap; }
+        @media (max-width: 800px) {
+            .pallet-dimensions-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .pallet-calculate-action { grid-column: 1 / -1; }
+        }
+        @media (max-width: 540px) {
+            .pallet-dimensions-grid { grid-template-columns: 1fr; }
+            .pallet-calculate-action { grid-column: auto; }
+        }
     </style>
 </head>
 
@@ -788,13 +809,8 @@
 <div class="calculator-wrapper">
 
     <header class="page-header">
-        <h1>Reel and Pallet Calculator</h1>
+        <h1>Multiplastics Reel and Pallet Calculator</h1>
 
-        <p>
-            Calculate reel diameter, reel weight, reel price, pallet weight,
-            pallet height and the maximum number of reels that can fit on each
-            pallet layer.
-        </p>
 
         <div class="required-key">
             <span class="required-key-box"></span>
@@ -892,116 +908,53 @@
 
 
 
-            <div class="field-group">
-                <label for="meters">Reel length</label>
-
-                <div class="input-with-unit">
-                    <input
-                        id="meters"
-                        class="required-input"
-                        type="number"
-                        inputmode="decimal"
-                        min="0"
-                        step="any"
-                        placeholder="e.g. 5000"
-                    >
-                    <span class="unit">metres</span>
-                </div>
-            </div>
-
-            <div class="field-group">
-                <label for="rlwidth">Reel width</label>
-
-                <div class="input-with-unit">
-                    <input
-                        id="rlwidth"
-                        class="required-input"
-                        type="number"
-                        inputmode="decimal"
-                        min="0"
-                        step="any"
-                        placeholder="e.g. 500"
-                    >
-                    <span class="unit">mm</span>
-                </div>
-            </div>
-
-            <div class="field-group">
-                <label for="reelqty">Number of reels</label>
-
-                <div class="input-with-unit">
-                    <input
-                        id="reelqty"
-                        class="required-input"
-                        type="number"
-                        inputmode="numeric"
-                        min="1"
-                        step="1"
-                        placeholder="e.g. 20"
-                    >
-                    <span class="unit">reels</span>
-                </div>
-            </div>
 
 
 
-            <div class="field-group">
-                <label for="core_euxx">Core internal diameter</label>
-
-                <div class="input-with-unit">
-                    <input
-                        id="core_euxx"
-                        type="number"
-                        inputmode="decimal"
-                        min="0"
-                        step="any"
-                        value="76"
-                    >
-                    <span class="unit">mm</span>
-                </div>
-            </div>
-
-            <div class="field-group">
-                <label for="thickness_euxx">Core wall thickness</label>
-
-                <div class="input-with-unit">
-                    <input
-                        id="thickness_euxx"
-                        type="number"
-                        inputmode="decimal"
-                        min="0"
-                        step="any"
-                        value="9.6"
-                    >
-                    <span class="unit">mm</span>
-                </div>
-            </div>
-
-            <div class="field-group">
-                <label for="kgprice">Price per kilogram</label>
-
-                <div class="input-with-unit">
-                    <span class="currency-prefix">£</span>
-                    <input
-                        id="kgprice"
-                        type="number"
-                        inputmode="decimal"
-                        min="0"
-                        step="0.01"
-                        placeholder="0.00"
-                        onblur="formatKilogramPrice()"
-                    >
-                    <span class="unit">£/kg</span>
-                </div>
-            </div>
-
-        </div>
+<div class="field-group">
+<label for="rlwidth">Reel width</label>
+<div class="input-with-unit">
+<input class="required-input" id="rlwidth" inputmode="decimal" min="0" placeholder="e.g. 500" step="any" type="number"/>
+<span class="unit">mm</span>
+</div>
+</div><div class="field-group">
+<label for="meters">Reel length</label>
+<div class="input-with-unit">
+<input class="required-input" id="meters" inputmode="decimal" min="0" placeholder="e.g. 5000" step="any" type="number"/>
+<span class="unit">metres</span>
+</div>
+</div><div class="field-group">
+<label for="reelqty">Number of reels</label>
+<div class="input-with-unit">
+<input class="required-input" id="reelqty" inputmode="numeric" min="1" placeholder="e.g. 20" step="1" type="number"/>
+<span class="unit">reels</span>
+</div>
+</div><div class="field-group">
+<label for="kgprice">Price per kilogram</label>
+<div class="input-with-unit">
+<span class="currency-prefix">£</span>
+<input id="kgprice" inputmode="decimal" min="0" onblur="formatKilogramPrice()" placeholder="0.00" step="0.01" type="number"/>
+<span class="unit">£/kg</span>
+</div>
+</div><div class="field-group">
+<label for="core_euxx">Core internal diameter</label>
+<div class="input-with-unit">
+<input id="core_euxx" inputmode="decimal" min="0" step="any" type="number" value="76"/>
+<span class="unit">mm</span>
+</div>
+</div><div class="field-group">
+<label for="thickness_euxx">Core wall thickness</label>
+<div class="input-with-unit">
+<input id="thickness_euxx" inputmode="decimal" min="0" step="any" type="number" value="9.6"/>
+<span class="unit">mm</span>
+</div>
+</div></div>
 
         <hr class="section-divider">
 
         <h3 class="subheading">Pallet dimensions</h3>
 
-        <div class="input-grid">
+        <div class="input-grid pallet-dimensions-grid">
 
             <div class="field-group pallet-type-field">
                 <label for="palletType">Pallet type</label>
@@ -1050,17 +1003,9 @@
                 </div>
             </div>
 
-        </div>
-
-        <div class="actions">
-            <button
-                class="button-primary"
-                type="button"
-                onclick="calculateMain()"
-            >
-                Calculate reel and pallet
-            </button>
-
+            <div class="pallet-calculate-action">
+                <button class="button-primary" type="button" onclick="calculateMain()">Calculate reel and pallet</button>
+            </div>
         </div>
 
         <div
@@ -2010,74 +1955,150 @@
 
     async function exportReelPDF() {
         const message = document.getElementById("pdfMessage");
-        message.textContent = "Preparing PDF…";
+        message.textContent = "Preparing one-page PDF…";
         try {
+            if (!validateMainInputs()) {
+                throw new Error("Please complete the required reel fields before exporting.");
+            }
+            // Refresh all results and diagrams before capturing them.
+            calculateMain();
             const JsPDF = await loadReelPdfLibrary();
-            const pdf = new JsPDF({ unit: "mm", format: "a4" });
-            const w = 210, margin = 17;
-            let y = 20;
+            const pdf = new JsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
+            const W = 297, H = 210, m = 12;
+            const val = id => {
+                const el = document.getElementById(id);
+                return el && el.value && el.value !== "—" ? el.value : "—";
+            };
+            const selected = id => {
+                const el = document.getElementById(id);
+                return el && el.selectedIndex >= 0 ? el.options[el.selectedIndex].text : "—";
+            };
+            const money = value => value === "—" || value === "Price Required" ? "Not entered" : "GBP " + value;
             pdf.setFillColor(20, 110, 52);
-            pdf.rect(0, 0, w, 35, "F");
+            pdf.rect(0, 0, W, 27, "F");
             pdf.setTextColor(255, 255, 255);
             pdf.setFont("helvetica", "bold");
             pdf.setFontSize(18);
-            pdf.text("MULTIPLASTICS", margin, 17);
+            pdf.text("MULTIPLASTICS", m, 12);
             pdf.setFontSize(11);
-            pdf.text("Reel & Pallet Calculation", margin, 26);
-            pdf.setTextColor(36, 50, 60);
-            y = 45;
-            pdf.setFontSize(9);
+            pdf.text("Reel and Pallet Calculation", m, 20);
             pdf.setFont("helvetica", "normal");
-            pdf.text("Report date: " + new Date().toLocaleDateString("en-GB"), margin, y);
-            const val = id => { const el = document.getElementById(id); return el ? (el.value || "—") : "—"; };
-            const selected = id => { const el = document.getElementById(id); return el ? el.options[el.selectedIndex].text : "—"; };
-            function heading(label) {
-                y += 10;
-                pdf.setFont("helvetica", "bold"); pdf.setFontSize(11);
-                pdf.setTextColor(15, 90, 42); pdf.text(label, margin, y);
-                y += 3;
-                pdf.setDrawColor(210, 224, 230); pdf.line(margin, y, w - margin, y);
-                y += 7;
+            pdf.setFontSize(8);
+            pdf.text("Report date: " + new Date().toLocaleDateString("en-GB"), W - m, 19, {align:"right"});
+
+            function section(x, y, width, title, rows) {
+                const rowH = 5.5;
+                const h = 10 + rows.length * rowH + 3;
+                pdf.setFillColor(248, 251, 249);
+                pdf.setDrawColor(208, 223, 215);
+                pdf.roundedRect(x, y, width, h, 2, 2, "FD");
+                pdf.setFillColor(232, 246, 236);
+                pdf.roundedRect(x + .3, y + .3, width - .6, 8, 1.5, 1.5, "F");
+                pdf.setFont("helvetica", "bold");
+                pdf.setFontSize(9.5);
+                pdf.setTextColor(15, 90, 42);
+                pdf.text(title, x + 4, y + 5.8);
+                const split = x + width * .53;
+                rows.forEach(([label, value], i) => {
+                    const yy = y + 12 + i * rowH;
+                    pdf.setFontSize(7.6);
+                    pdf.setFont("helvetica", "normal");
+                    pdf.setTextColor(79, 93, 100);
+                    pdf.text(String(label), x + 4, yy);
+                    pdf.setFont("helvetica", "bold");
+                    pdf.setTextColor(30, 48, 53);
+                    const maxW = x + width - 4 - split;
+                    let v = String(value);
+                    while (pdf.getTextWidth(v) > maxW && v.length > 3) v = v.slice(0, -2) + "…";
+                    pdf.text(v, split, yy);
+                });
             }
-            function line(label, value) {
-                if (y > 272) { pdf.addPage(); y = 20; }
-                pdf.setFont("helvetica", "normal"); pdf.setFontSize(9);
-                pdf.setTextColor(75, 91, 100); pdf.text(label, margin, y);
-                pdf.setFont("helvetica", "bold"); pdf.setTextColor(36, 50, 60);
-                pdf.text(String(value), 102, y);
-                y += 7;
+            const laminate = document.getElementById("filmType").value === "laminate";
+            const filmRows = [
+                ["Film type", selected("filmType")],
+                [laminate ? "Layer 1" : "Material", selected("density")],
+                [laminate ? "Layer 1 thickness" : "Film thickness", val("mu") + " microns"]
+            ];
+            if (laminate) {
+                filmRows.push(["Layer 2", selected("density2")]);
+                filmRows.push(["Layer 2 thickness", val("mu2") + " microns"]);
             }
-            heading("Film specification");
-                        line("Film type", selected("filmType"));
-            line("Layer 1", selected("density") + " / " + val("mu") + " microns");
-            const layer2 = document.getElementById("mu2");
-            if (layer2 && layer2.offsetParent !== null) {
-                const density2 = document.getElementById("density2");
-                line("Layer 2", (density2 ? selected("density2") : "Laminate layer") + " / " + layer2.value + " microns");
+            const reelRows = [
+                ["Reel width", val("rlwidth") + " mm"],
+                ["Reel length", val("meters") + " metres"],
+                ["Number of reels", val("reelqty")],
+                ["Price per kilogram", money(val("kgprice")) + (val("kgprice") === "—" ? "" : " / kg")],
+                ["Core internal diameter", val("core_euxx") + " mm"],
+                ["Core wall thickness", val("thickness_euxx") + " mm"]
+            ];
+            const palletRows = [
+                ["Pallet type", selected("palletType").replace("UK Pallet (40 × 48) — ", "UK ")],
+                ["Maximum pallet height", val("height") + " mm"],
+                ["Reel outside diameter", val("cd") + " mm"],
+                ["Reel weight", val("rlweight") + " kg"],
+                ["Reel price", money(val("rlprice"))],
+                ["Total film weight", val("palletweight") + " kg"],
+                ["Layers required", val("layersRequired")],
+                ["Pallets required", val("palletsRequired")],
+                ["Max layers per pallet", val("maxpalht")]
+            ];
+            section(12, 33, 86, "Film specification", filmRows);
+            section(103, 33, 87, "Reel information", reelRows);
+            section(195, 33, 90, "Pallet and calculated results", palletRows);
+
+            // Bottom third: actual canvas drawings plus the reel dimension image.
+            const panelY = 107, panelH = 83, panelGap = 5;
+            const panelW = (W - 2 * m - 2 * panelGap) / 3;
+            function panel(x, title, subtitle) {
+                pdf.setDrawColor(208, 223, 215);
+                pdf.setFillColor(255, 255, 255);
+                pdf.roundedRect(x, panelY, panelW, panelH, 2, 2, "FD");
+                pdf.setFillColor(232, 246, 236);
+                pdf.rect(x + .4, panelY + .4, panelW - .8, 9, "F");
+                pdf.setFont("helvetica", "bold"); pdf.setFontSize(9);
+                pdf.setTextColor(15, 90, 42);
+                pdf.text(title, x + 4, panelY + 6);
+                pdf.setFont("helvetica", "normal"); pdf.setFontSize(7.3);
+                pdf.setTextColor(79, 93, 100);
+                pdf.text(subtitle, x + 4, panelY + panelH - 4);
             }
-            heading("Reel information");
-            line("Reel length", val("meters") + " metres");
-            line("Reel width", val("rlwidth") + " mm");
-            line("Number of reels", val("reelqty"));
-            line("Core internal diameter", val("core_euxx") + " mm");
-            line("Core wall thickness", val("thickness_euxx") + " mm");
-            line("Price per kilogram", val("kgprice") ? "GBP " + val("kgprice") + " / kg" : "Not entered");
-            heading("Pallet information");
-            line("Pallet type", selected("palletType"));
-            line("Maximum pallet height", val("height") + " mm");
-            heading("Calculated results");
-            for (const [label, id, unit] of [
-                ["Reel outside diameter", "cd", "mm"], ["Reel weight", "rlweight", "kg"],
-                ["Reel price", "rlprice", "GBP"], ["Total film weight", "palletweight", "kg"],
-                ["Layers required", "layersRequired", ""], ["Pallets required", "palletsRequired", ""],
-                ["Maximum layers per pallet", "maxpalht", ""]
-            ]) line(label, (unit === "GBP" ? "GBP " : "") + val(id) + (unit && unit !== "GBP" ? " " + unit : ""));
-            y += 6;
-            pdf.setFont("helvetica", "normal"); pdf.setFontSize(8); pdf.setTextColor(100, 115, 125);
-            const note = pdf.splitTextToSize("Theoretical values only. Actual reel dimensions and weights may vary due to material and production tolerances.", w - 2 * margin);
-            if (y + note.length * 4 > 285) { pdf.addPage(); y = 20; }
-            pdf.text(note, margin, y);
-            pdf.save("Multiplastics_Reel_Pallet_Calculation.pdf");
+            const rectText = document.getElementById("results").textContent.trim();
+            const triText = document.getElementById("results2").textContent.trim();
+            const x1 = m, x2 = m + panelW + panelGap, x3 = m + (panelW + panelGap) * 2;
+            panel(x1, "Rectangular pallet pattern", rectText);
+            panel(x2, "Triangular pallet pattern", triText);
+            panel(x3, "Reel dimensions", "Width " + val("rlwidth") + " mm   |   OD " + val("cd") + " mm");
+            for (const [id, x] of [["myCanvas", x1], ["myCanvas2", x2]]) {
+                const canvas = document.getElementById(id);
+                pdf.addImage(canvas.toDataURL("image/png"), "PNG", x + 19, panelY + 12, 55, 55);
+            }
+            // Prefer the existing reel illustration; draw a schematic fallback if unavailable.
+            const reelImg = document.getElementById("reelImage");
+            let reelAdded = false;
+            if (reelImg && reelImg.complete && reelImg.naturalWidth > 0) {
+                try {
+                    const cv = document.createElement("canvas");
+                    cv.width = reelImg.naturalWidth;
+                    cv.height = reelImg.naturalHeight;
+                    cv.getContext("2d").drawImage(reelImg, 0, 0);
+                    const ratio = cv.width / cv.height;
+                    const h = 53, w = Math.min(66, h * ratio);
+                    pdf.addImage(cv.toDataURL("image/png"), "PNG", x3 + (panelW - w) / 2, panelY + 12, w, h);
+                    reelAdded = true;
+                } catch (_) { /* fallback below */ }
+            }
+            if (!reelAdded) {
+                const cx = x3 + panelW / 2, cy = panelY + 40;
+                pdf.setFillColor(236, 242, 246); pdf.setDrawColor(45, 75, 85);
+                pdf.ellipse(cx, cy, 25, 25, "FD");
+                pdf.setFillColor(255, 255, 255); pdf.ellipse(cx, cy, 5, 5, "FD");
+                pdf.setFontSize(8); pdf.setTextColor(15, 90, 42);
+                pdf.text("OD " + val("cd") + " mm", cx, cy + 31, {align:"center"});
+            }
+            pdf.setFont("helvetica", "normal"); pdf.setFontSize(7.2);
+            pdf.setTextColor(95, 108, 115);
+            pdf.text("Theoretical values only. Actual manufactured reel measurements and weights may vary due to material and production tolerances.", m, 200);
+            pdf.save("Multiplastics_Reel_and_Pallet_Calculation.pdf");
             message.textContent = "";
         } catch (error) {
             message.textContent = error.message || "Unable to export PDF.";
